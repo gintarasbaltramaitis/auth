@@ -1,0 +1,12 @@
+.virsus{
+	background: #6396bc;
+	width: 100%;
+	top: 0;
+	position: fixed;
+}
+.logo{
+	float: left;
+}
+.nav button{
+	float: right;
+}

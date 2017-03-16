@@ -7,8 +7,11 @@ var bodyparser = require('body-parser')
 var app = express()
 
 app.use(bodyparser.urlencoded({extended : true}));
-app.use(session({secret: "DuGaideliaiZirniusKule" , resave : false , saveUninitialized : true}));
-app.use("/login",express.static("html",{index : "login.html"}));
+app.use(session({
+	"secret":"DQW5435FWEFWERHER345HER15EGERVEH",
+	"resave":false,
+"saveUninitialized":true}));
+app.use("/login",express.static("puslapis",{index : "login.html"}));
 
 app.get("/", function(req, resp){
 	if (req.session["sessionUser"])
@@ -21,7 +24,7 @@ app.get("/", function(req, resp){
 	}
 });
 
-app.post("/login", function(req, response){
+app.post("/login", function(req, resp){
 	
 	soap.createClient(url, function(error, client) {
     if (error) {
@@ -33,14 +36,14 @@ app.post("/login", function(req, response){
         password:    req.body["slaptazodis"]
     }
 
-    client.describe().AuthenticationService.authenticationPort;
-    client.save(data,function(err,res){
+    client.describe().AuthService.authPort;
+    client.save(data,function(err, res){
             if (err) 
 			{
 				throw err;
 			}
             console.log (res);
-			if (res["isLogin"]==true || res["isLogin"]=="true")
+			if (res["Login"]==true || res["Login"]=="true")
 			{
 				req.session.regenerate(function(error){
 				if(error)
@@ -62,23 +65,26 @@ app.post("/login", function(req, response){
 });
 
 
-app.get("/logout", function(req, resp){
-		req.session.destroy(function(error){
+app.get("/logout", function(request, response){
+	if (request.session["sessionUser"])
+	{
+		request.session.destroy(function(error){
 		if(error)
 		{
 			throw error;
 		}
+		response.redirect("/login");
 		});
 	}
-		else
+	else
 	{
-		resp.redirect("/login");
+		response.redirect("/login");
 	}
 });
 
 
 app.listen(3000, function () {
-  console.log('VK-auth app listening on port 3000!')
+  console.log('Linstening on 3000 port!')
 })
 
 

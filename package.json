@@ -1,11 +1,10 @@
-
 {
   "name": "example",
   "version": "1.0.0",
   "description": "",
   "main": "service.js",
   "dependencies": {
-    "express": "^4.14.1",
+    "express": "^4.15.2",
     "soap": "^0.18.0"
   },
   "devDependencies": {},
@@ -14,4 +13,5 @@
   },
   "author": "Me",
   "license": "ISC"
+  
 }

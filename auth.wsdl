@@ -18,7 +18,7 @@
 	
 	<wsdl:portType name="authBank">
 
-        <wsdl:operation name="request">
+        <wsdl:operation name="save">
             <wsdl:input message="authRequest"/>
             <wsdl:output message="authResponse"/>
         </wsdl:operation>

@@ -1,22 +1,26 @@
 'use strict'
+var mongoose = require('mongoose');
 var soap = require('soap');
 var url = 'http://localhost:8001/imam?wsdl';
 var express = require('express')
 var session = require('express-session')
 var bodyparser = require('body-parser')
 var app = express()
+mongoose.connect('mongodb://localhost/pamoka');
+var db = mongoose.connection;
 
 app.use(bodyparser.urlencoded({extended : true}));
 app.use(session({
 	"secret":"DQW5435FWEFWERHER345HER15EGERVEH",
 	"resave":false,
 "saveUninitialized":true}));
+app.use(express.static('puslapis'))
 app.use("/login",express.static("puslapis",{index : "login.html"}));
 
 app.get("/", function(req, resp){
 	if (req.session["sessionUser"])
 	{
-		resp.send("Sveiki " + req.session["email"]+'<br><a href="/logout">Logout</a>')
+		resp.redirect("/pamoka");
 	}
 	else
 	{
@@ -81,7 +85,12 @@ app.get("/logout", function(request, response){
 		response.redirect("/login");
 	}
 });
+app.get("/pamoka", function(request, response){
+	response.sendFile(__dirname + '/puslapis/Prideti_pamoka.html');
+});
+app.get('/pamoka/prideti', function(req, res){
 
+});
 
 app.listen(3000, function () {
   console.log('Linstening on 3000 port!')

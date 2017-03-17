@@ -29,50 +29,47 @@
 <h3>Pamokos pridėjimas</h3>
   
   
-  <form class="form-inline">
+  <form class="form-inline" action="/pamoka/prideti" method="POST">
 	
 	<div class="input-group">
-		<input type="text" class="form-control" placeholder="Tema">
+		<input type="text" class="form-control" name="tema" placeholder="Tema">
     </div>
 	
 	<br>
 	<br>
 	
     <div class="input-group">
-		<input type="text" class="form-control" placeholder="Aprašymas"></textarea>
+		<input type="text" class="form-control" name="aprasymas" placeholder="Aprašymas"></textarea>
     </div>
-	</form>
 	
 	<br>
 	<br>
 	
 		
-	<div class="dropdown">					
-						<button  type="button" data-toggle="dropdown">Programavimo kalba
-						<span class="caret"></span></button>
-						<ul class="dropdown-menu dropdown-menu-middle">
-							<li><a href="#">HTML</a></li>
-							<li><a href="#">CSS</a></li>
-							<li><a href="#">JavaScript</a></li>
-						</ul>
+	<div class="form-group">
+		Kalba:
+		<select name="kalba" class="form-control">
+		<option >JavaScript</option>
+		<option >HTML</option>
+		<option >CSS</option>
+		</select>
 	</div>
 	
-	<br>
+	<br><br>
 	
+<div class="form-group">
+		Lygis:
+		<select name="lygis" class="form-control">
+		<option >Pradžiamokslis</option>
+		<option >Vidutinis</option>
+		<option >Pažengęs</option>
+		</select>
+	</div>
 
-	<div class="dropdown">
-						<button type="button" data-toggle="dropdown">Lygis
-						<span class="caret"></span></button>
-						<ul class="dropdown-menu dropdown-menu-middle">
-							<li><a href="#">Pradžiamokslis</a></li>
-							<li><a href="#">Vidutinis</a></li>
-							<li><a href="#">Pažengęs</a></li>
-						</ul>
-	</div>
 	
 	<br>
 	<br>
-	<p align="center"><button class="btn-primary btn-md">Toliau</button></p>
+	<p align="center"><button class="btn-primary btn-md" >Toliau</button></p>
 
 	<p align="center"><button class="btn-primary btn-md">Atšaukti</button></p>
   </form>

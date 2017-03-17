@@ -1,13 +1,18 @@
 'use strict'
-var mongoose = require('mongoose');
+const MongoClient = require('mongodb').MongoClient
 var soap = require('soap');
 var url = 'http://localhost:8001/imam?wsdl';
 var express = require('express')
 var session = require('express-session')
 var bodyparser = require('body-parser')
 var app = express()
-mongoose.connect('mongodb://localhost/pamoka');
-var db = mongoose.connection;
+
+var db
+
+MongoClient.connect('mongodb://viko:viko@ds133340.mlab.com:33340/viko', (err, database) => {
+  if (err) return console.log(err)
+  db = database
+})
 
 app.use(bodyparser.urlencoded({extended : true}));
 app.use(session({
@@ -88,9 +93,17 @@ app.get("/logout", function(request, response){
 app.get("/pamoka", function(request, response){
 	response.sendFile(__dirname + '/puslapis/Prideti_pamoka.html');
 });
-app.get('/pamoka/prideti', function(req, res){
-
+app.get("/paskyra", function(request, response){
+	response.sendFile(__dirname + '/puslapis/paskyra.html');
 });
+app.post('/pamoka/prideti', (req, res) => {
+  db.collection('pamoka').save(req.body, (err, result) => {
+    if (err) return console.log(err)
+
+    console.log('saved to database')
+    res.redirect("/paskyra");
+  })
+})
 
 app.listen(3000, function () {
   console.log('Linstening on 3000 port!')

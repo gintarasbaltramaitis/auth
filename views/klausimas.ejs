@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Klausimai</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="css/stiliai.css">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/w3.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">VIKO</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="#">Paskyra</a></li>
+      <li><a href="#">Pamokos</a></li>
+      <li><a href="#">Mano pamogos</a></li>
+    </ul>
+	<ul class="nav navbar-nav navbar-right">
+      <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Atsijungti</a></li>
+    </ul>
+  </div>
+</nav>
+
+
+<div  class="container">
+<form class="form-inline" action="/klausimas/naujas" method="POST">
+<div class="row">
+<% for(var i=0; i<klausimas.length; i++) {%>
+
+
+<div class="btn-group button-group-left btn-primary btn-xs" >
+<span class=" w3-button w3-circle w3-white"><%= klausimas[i].kl_id %></span>
+</div>
+
+<% } %>
+
+<div class="btn-group button-group-left btn-primary btn-xs" >
+<button class=" w3-button w3-circle w3-white">+</button>
+</div>
+
+</form>
+</div>
+</div>
+
+  <br> <br>
+  
+   
+	<div align="center" class="container">
+	<form class="form-inline" action="/pamokos" method="POST" >						
+				<div class="col-sm-9">			
+					
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Klausimas" name="vardas">
+				</div>
+				<br><br><br>
+				<div class="input-group">
+		<textarea class="form-control" rows="15" cols="200" name="uzduotis"  placeholder="Užduotis"></textarea>
+    </div>
+	
+	<br><br>
+	<div align="left">
+		<input type="text" align="left" class="form-control" name="atsakymas"  placeholder="Teisingas atsakymas">
+	</div>
+	<br> <br>
+	<a href="#" class="btn btn-primary btn-xl">Išsaugoti</a>
+	<a href="#" class="btn btn-primary btn-xl">Tęsti</a>
+	</div>
+	<div class="col-sm-3"> 
+			
+			<table class="table" style="width:100%">
+
+			<tr>
+				<th><p align="right"><font color="blue" size="2">Nauja skaidrė:</font>
+				<div class="input-group">
+					<input type="text" name="skaidre" class="form-control" placeholder="URL">
+				</div>
+				</th>
+			</tr>
+			
+			</table>
+
+			
+			</div>
+</form>
+  
+  </div>
+
+</body>
+</html>

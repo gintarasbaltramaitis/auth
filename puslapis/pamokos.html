@@ -28,7 +28,7 @@
     </ul>
   </div>
 </nav>
-<div align="center" class="container">
+<div align="center" class="container" method="/pamokos">
 <div class="container">	
 <h2>Top pamokos</h2>
 	<div class="panel panel-default">
@@ -53,7 +53,7 @@
 
 
 
-<h2>Pamokos(1)</h2>
+<h2>Pamokos</h2>
 <br> <br>
 				
 <br>
@@ -62,23 +62,24 @@
 	<div class="panel panel-default">
 		<div class="panel-body">
 				<div class="col-sm-2 col-md-2 col-lg-2">	
-				  <p align="left"><font size="4"><b>HTML</b></font></p>
-				  <p align="left"><font size="2" color="gray">Antanas</font></p>
+				<% for(var i=0; i<pamoka.length; i++) {%>
+				  <p align="left"><font size="4"><b><%= pamoka[i].tema %></b></font></p>
+				  <p align="left"><font size="2" color="gray"><%= pamoka[i].emailas %></font></p>
 				</div>			
 				<div class="col-sm-7 col-md-7 col-lg-8">
-				  <p align="left"><font size="2">HTML</font></p>
-				  <p align="left"><font color="green"><b>Pradžiamokslis</b></font>Žmonių sprendė : 0| Vidutinis laikas: 20min| Pridėta: 2017-01-02| Redaguota: niekada</p>
+				  <p align="left"><font size="2"><%= pamoka[i].kalba %></font></p>
+				  <p align="left"><font color="green"><b><%= pamoka[i].lygis %></b></font><%= pamoka[i].aprasymas %></p>
+				    <% } %>
 				<br>
 				<div align="left">
 				  <a href="#" class="btn btn-primary btn-xl">Sustabdyti</a>
-				  <a href="#" class="btn btn-primary btn-xl">Redaguoti</a>
+				  <a href="#" class="btn btn-primary btn-xl">Redaguoti</a> 
 				  <a href="#" class="btn btn-primary btn-xl">Trinti</a>
 				  </div>
 				</div>		
 		</div>
 	</div>
 </div>
-
 
 <h2>Nepabaigtos pamokos</h2>
 <br> <br>
@@ -105,6 +106,6 @@
 		</div>
 	</div>
 </div>
-
+</div>
 </body>
 </html>

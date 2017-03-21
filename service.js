@@ -3,22 +3,24 @@
 var soap = require('soap');
 var http = require('http');
 var xml = require('fs').readFileSync('auth.wsdl', 'utf8');
-var useris = [{"email":"tevas@padre.lt", "password":"mama"}];
+var useris = [{"email":"as@as.lt", "password":"mama"}, {"email":"tevas@padre.lt", "password":"mama"}];
+var i = 0
 
 var service = {
 	AuthService : {
 		authPort : {
 			save: function(args){
 				var isTrue = false;
-			if(args["email"] == useris[0]["email"] && args["password"] == useris[0]["password"])
-				{
-					isTrue = true;
-						
+				for(i=0; i<useris.length; i++){
+			if(args["email"] == useris[i]["email"] && args["password"] == useris[i]["password"])
+				{					
+					isTrue = true;						
 				}
-				
+				}	
 				return{
-				Login: isTrue	}	
+				Login: isTrue	}
 			}
+					
 		}
 }};
 
@@ -28,4 +30,6 @@ var server = http.createServer(function(request,response) {
 
 server.listen(8001);
 soap.listen(server, '/imam', service, xml);
+
+
 

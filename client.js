@@ -6,8 +6,7 @@ var express = require('express')
 var session = require('express-session')
 var bodyparser = require('body-parser')
 var app = express()
-var  ilgis
-var kilgis
+
 var db
 
 MongoClient.connect('mongodb://viko:viko@ds133340.mlab.com:33340/viko', (err, database) => {
@@ -15,11 +14,16 @@ MongoClient.connect('mongodb://viko:viko@ds133340.mlab.com:33340/viko', (err, da
   db = database
 })
 app.set('view engine', 'ejs')
-app.use(bodyparser.urlencoded({extended : true}));
+app.use(bodyparser.urlencoded({extended : true}))
+app.use(bodyparser.json())
+app.use(express.static('public'))
 app.use(session({
 	"secret":"DQW5435FWEFWERHER345HER15EGERVEH",
 	"resave":false,
 "saveUninitialized":true}));
+app.use("/paskyra",express.static('puslapis'));
+app.use("/pamokos",express.static('puslapis'));
+app.use("/manopamokos",express.static('puslapis'));
 app.use("/pamoka",express.static('puslapis'));
 app.use("/prideti/klausima",express.static('puslapis'));
 app.use("/login",express.static("puslapis",{index : "login.html"}));
@@ -27,7 +31,7 @@ app.use("/login",express.static("puslapis",{index : "login.html"}));
 app.get("/", function(req, resp){
 	if (req.session["sessionUser"])
 	{
-		resp.redirect("/pamoka");
+		resp.redirect("/paskyra");
 
 	}
 	else
@@ -100,8 +104,8 @@ app.get("/pamoka", function(request, response){
 app.get("/paskyra", function(request, response){
 	response.sendFile(__dirname + '/puslapis/paskyra.html');
 });
-app.get('/pamokos', (req, res) => {
-  db.collection('pamoka').find().toArray((err, result) => {
+app.get('/manopamokos', (req, res) => {
+  db.collection('pamoka').find({"emailas": req.session.email}).toArray((err, result) => {
     if (err) return console.log(err)
     // renders index.ejs
     res.render('pamokos.ejs', {pamoka: result})
@@ -111,14 +115,13 @@ app.post('/pamoka/prideti', (req, res) => {
 	
 	db.collection('pamoka').find().toArray((err, result) => {
     if (err) return console.log(err)
-    ilgis=result.length;
 	var duomenys = {
 		emailas:req.session.email,
 		tema:req.body.tema,
 		aprasymas:req.body.aprasymas,
 		kalba:req.body.kalba,
 		lygis:req.body.lygis,
-		pamokos_id:ilgis
+		publikuota: false
 		
 		
 		}
@@ -138,17 +141,13 @@ app.get("/prideti/klausima", function(request, response){
 	
 });
 app.post("/klausimas/naujas", function(req, res){
-	console.log("as cia")
 	db.collection('klausimas').find().toArray((err, result) => {
     if (err) return console.log(err)
-    kilgis=result.length;
 	var duomenys = {
 		vardas:"",
 		uzduotis:"",
 		atsakymas:"",
 		skaidre:"",
-		kl_id:kilgis+1,
-		pamokos_id:ilgis
 		
 		
 		}
@@ -160,27 +159,59 @@ app.post("/klausimas/naujas", function(req, res){
   })
 })
 });
-app.post('/pamokos', (req, res) => {
+// app.post('/pamokos', (req, res) => {
 	
-	db.collection('klausimas').find().toArray((err, result) => {
-    if (err) return console.log(err)
-    ilgis=result.length;
-	var duomenys = {
-		emailas:req.session.email,
-		tema:req.body.tema,
-		aprasymas:req.body.aprasymas,
-		kalba:req.body.kalba,
-		lygis:req.body.lygis,
-		pamokos_id:ilgis
+	// db.collection('klausimas').find().toArray((err, result) => {
+    // if (err) return console.log(err)
+    // ilgis=result.length;
+	// var duomenys = {
+		// emailas:req.session.email,
+		// tema:req.body.tema,
+		// aprasymas:req.body.aprasymas,
+		// kalba:req.body.kalba,
+		// lygis:req.body.lygis,
+		// pamokos_id:ilgis
 		
 		
-		}
-  db.collection('pamoka').save(duomenys , (err, result) => {
+		// }
+  // db.collection('pamoka').save(duomenys , (err, result) => {
+    // if (err) return console.log(err)
+    // res.redirect("/prideti/klausima");
+  // })
+// })
+ // })
+ app.get('/pamokos', (req, res) => {
+  db.collection('pamoka').find().toArray((err, result) => {
+	  console.log(result)
     if (err) return console.log(err)
-    res.redirect("/prideti/klausima");
+    // renders index.ejs
+    res.render('pamokos.ejs', {pamoka: result})
   })
 })
- })
+
+// app.get('/publikuoti/:id', (req, res) => {
+	// var id = req.params.id
+	// console.log(id)
+// })
+app.put('/publikuoti/:id', (req, res) => {
+  db.collection('pamoka').findOneAndUpdate({_id: req.params.id}, {
+    $set: {
+      publikuota: true
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+    res.send(result)
+  })
+})
+
+app.delete('/publikuoti/:id', (req, res) => {
+  db.collection('pamokos').findOneAndDelete({_id: req.params.id}, (err, result) => {
+    if (err) return res.send(err)
+  })
+})
 app.listen(3000, function () {
   console.log('Linstening on 3000 port!')
 })

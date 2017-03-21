@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html ng-app>
 <head>
 	<title>Pamokos</title>
   <meta charset="utf-8">
   <link rel="stylesheet" href="css/stiliai.css">
   <link rel="stylesheet" href="css/bootstrap.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
   
 </head>
 <body>
@@ -20,16 +19,17 @@
     </div>
     <ul class="nav navbar-nav">
       <li><a href="#">Paskyra</a></li>
-      <li><a href="#">Pamokos</a></li>
-      <li><a href="#">Mano pamogos</a></li>
+      <li><a href="/pamokos">Pamokos</a></li>
+      <li><a href="/manopamokos">Mano pamogos</a></li>
     </ul>
 	<ul class="nav navbar-nav navbar-right">
-      <li><a href="#"><span class="glyphicon glyphicon-log-out"></span> Atsijungti</a></li>
+      <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Atsijungti</a></li>
     </ul>
   </div>
 </nav>
 <div align="center" class="container" method="/pamokos">
 <div class="container">	
+<a align="right" href="/pamoka" class="btn btn-primary btn-xl">Kuri pamoka</a>
 <h2>Top pamokos</h2>
 	<div class="panel panel-default">
 		<div class="panel-body">
@@ -82,7 +82,13 @@
 				<div align="left">
 				  <a href="#" class="btn btn-primary btn-xl">Sustabdyti</a>
 				  <a href="#" class="btn btn-primary btn-xl">Redaguoti</a> 
-				  <a href="#" class="btn btn-primary btn-xl">Trinti</a>
+				 <button class="btn btn-primary btn-xl">Trinti</button>
+				  <% if(pamoka[i].publikuota == false){%>
+				  
+				  <button id="update" class="btn btn-primary btn-xl">Publikuoti</button>
+				  <% } %>
+				  
+				  
 				  </div>
 				</div>	
 				</div></div>
@@ -119,5 +125,8 @@
 	</div>
 </div>
 </div>
+<script src="lectures.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>
 </html>

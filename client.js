@@ -8,7 +8,7 @@ var bodyparser = require('body-parser')
 var app = express()
 
 var db
-
+var ObjectId = require('mongodb').ObjectID;
 MongoClient.connect('mongodb://viko:viko@ds133340.mlab.com:33340/viko', (err, database) => {
   if (err) return console.log(err)
   db = database
@@ -16,7 +16,7 @@ MongoClient.connect('mongodb://viko:viko@ds133340.mlab.com:33340/viko', (err, da
 app.set('view engine', 'ejs')
 app.use(bodyparser.urlencoded({extended : true}))
 app.use(bodyparser.json())
-app.use(express.static('public'))
+
 app.use(session({
 	"secret":"DQW5435FWEFWERHER345HER15EGERVEH",
 	"resave":false,
@@ -27,17 +27,19 @@ app.use("/manopamokos",express.static('puslapis'));
 app.use("/pamoka",express.static('puslapis'));
 app.use("/prideti/klausima",express.static('puslapis'));
 app.use("/login",express.static("puslapis",{index : "login.html"}));
+app.use(express.static('public'))
+app.use(express.static('puslapis'))
 
 app.get("/", function(req, resp){
-	if (req.session["sessionUser"])
-	{
-		resp.redirect("/paskyra");
+	// if (req.session["sessionUser"])
+	// {
+		// resp.redirect("/paskyra");
 
-	}
-	else
-	{
-		resp.redirect("/login");
-	}
+	// }
+	// else
+	// {
+		resp.redirect("/pamokos");
+	//}
 });
 
 app.post("/login", function(req, resp){
@@ -182,7 +184,6 @@ app.post("/klausimas/naujas", function(req, res){
  // })
  app.get('/pamokos', (req, res) => {
   db.collection('pamoka').find().toArray((err, result) => {
-	  console.log(result)
     if (err) return console.log(err)
     // renders index.ejs
     res.render('pamokos.ejs', {pamoka: result})
@@ -193,10 +194,14 @@ app.post("/klausimas/naujas", function(req, res){
 	// var id = req.params.id
 	// console.log(id)
 // })
-app.put('/publikuoti/:id', (req, res) => {
-  db.collection('pamoka').findOneAndUpdate({_id: req.params.id}, {
+app.put('/pamokos', (req, res) => {
+  console.log('iki cia daeina')
+  var idas=req.body._id
+  console.log(idas)
+  db.collection('pamoka')
+  .findOneAndUpdate({"_id": ObjectId(idas)}, {
     $set: {
-      publikuota: true
+      publikuota: "true"
     }
   }, {
     sort: {_id: -1},
@@ -207,11 +212,16 @@ app.put('/publikuoti/:id', (req, res) => {
   })
 })
 
-app.delete('/publikuoti/:id', (req, res) => {
-  db.collection('pamokos').findOneAndDelete({_id: req.params.id}, (err, result) => {
-    if (err) return res.send(err)
+app.delete('/pamokos/:id', (req, res) => {
+	console.log('iki cia daeina')
+	var idas=req.body._id
+  db.collection('pamoka').findOneAndDelete({"_id": ObjectId(idas)}, (err, result) => {
+
+    if (err) return res.send(500, err)
+		res.send('istrinta')
   })
 })
+
 app.listen(3000, function () {
   console.log('Linstening on 3000 port!')
 })

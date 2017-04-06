@@ -82,10 +82,10 @@
 				<div align="left">
 				  <a href="#" class="btn btn-primary btn-xl">Sustabdyti</a>
 				  <a href="#" class="btn btn-primary btn-xl">Redaguoti</a> 
-				 <button class="btn btn-primary btn-xl">Trinti</button>
+				 <button  onclick=trinti("<%= pamoka[i]._id %>") class="btn btn-primary btn-xl") >Trinti</button>
 				  <% if(pamoka[i].publikuota == false){%>
 				  
-				  <button id="update" class="btn btn-primary btn-xl">Publikuoti</button>
+				  <button onclick=publikuoti("<%= pamoka[i]._id %>") class="btn btn-primary btn-xl">Publikuoti</button>
 				  <% } %>
 				  
 				  
@@ -118,14 +118,72 @@
 				<div align="left">
 				  <a href="#" class="btn btn-primary btn-xl">Sustabdyti</a>
 				  <a href="#" class="btn btn-primary btn-xl">Redaguoti</a>
-				  <a href="#" class="btn btn-primary btn-xl">Trinti</a>
+				  <button id="delete" >jo</button>
 				  </div>
 				</div>		
 		</div>
 	</div>
 </div>
 </div>
-<script src="lectures.js"></script>
+<script>
+
+update.addEventListener('click', function () {
+  fetch('quotes', {
+    method: 'put',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      'name': 'Darth Vader',
+      'quote': 'I find your lack of faith disturbing.'
+    })
+  })
+  .then(response => {
+    if (response.ok) {return response.json()
+	window.location.reload()}
+		
+  })
+  .then(data => {
+    console.log(data)
+  })
+})
+
+function publikuoti(lygis) {
+fetch('/pamokos', {
+    method: 'put',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      '_id': lygis
+    })
+  })
+  .then(response => {
+    if (response.ok) {return response.json()
+	}
+		
+  })
+  .then(data => {
+    console.log(data)
+	window.location.reload()
+  })
+  
+
+}
+function trinti(lygis) {
+fetch('/pamokos/lygis', {
+    method: 'delete',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      '_id': lygis
+	  
+    })
+  }).then(function (response) {
+    window.location.reload()
+  })
+	
+}
+
+</script>
+<script src="main.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 </body>

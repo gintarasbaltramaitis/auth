@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html ng-app>
 <head>
 <link rel="stylesheet" href="css/bootstrap.css">
 <link rel="stylesheet" type="text/css" href="stiliai.css">
@@ -19,21 +19,20 @@
   <form class="form-inline" action="/register" method="POST">
 	
 	<div class="input-group">
-		<input type="text" class="form-control" id="vardas" name="vardas" placeholder="Rodomas vardas">
+		<input type="text" class="form-control" id="vardas" name="vardas" placeholder="Rodomas vardas" value="<% if(typeof vardas != "undefined"){%><%=vardas%><% } %>">
 	</div>
 	
 	<br>
+	<span style="color:red"> <% if(typeof vardass != "undefined") {%>  <%= vardass %> <% } %></span>
 	<br>
 	
     <div class="input-group">
-		<input type="email" class="form-control" name="email" id="email" placeholder="Elektroninas paštas">
+		<input type="email" class="form-control" name="email" id="email" placeholder="Elektroninas paštas" value="<% if(typeof emailas != "undefined"){%><%=emailas%><% } %>" >
 	</div>
 	
 	
 	<br>
-	<span id="emailas"><% if (this.pamoka) { %>
-   here, user is defined
-<% } %> </span>
+	<span style="color:red"> <% if(typeof em != "undefined") {%>  <%= em %> <% } %></span>
 	<br>
 		
     <div class="input-group">
@@ -49,6 +48,7 @@
 	</div>
 	
 	<br>
+	<span style="color:red"> <% if(typeof pass != "undefined") {%>  <%= pass %> <% } %></span>
 	<br>
 	<div class="radio">
       <label><input type="radio" id="rb1" name="optradio" value="1" checked="checked">Studentas</label>
@@ -56,7 +56,9 @@
     <div class="radio">
       <label><input type="radio" id="rb2" name="optradio" value="2" >Dėstytojas</label>
     </div>
-	<br> <br>
+	<br>
+	
+	<br>
 	<p><button  id="register" class="btn btn-primary">Registruotis</button></p>
 
 	<p><button style="" class="btn btn-primary">Atgal</button></p>

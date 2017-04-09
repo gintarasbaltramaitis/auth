@@ -11,9 +11,28 @@ var email
 var pw1
 var pw2
 var role
-var klaida
+var klaida = 'bybys'
 var db
 var kl
+var t1
+var t2
+var passw
+var ema
+var va
+var userRepository = [
+    {
+        id : 1,
+        name : 'Fun',
+        lastname : 'Time',
+        created_at : new Date()
+    },
+    {
+        id : 2,
+        name : 'Not fun',
+        lastname : 'Time',
+        created_at : new Date()
+    }
+];
 var ObjectId = require('mongodb').ObjectID;
 MongoClient.connect('mongodb://viko:viko@ds133340.mlab.com:33340/viko', (err, database) => {
   if (err) return console.log(err)
@@ -36,34 +55,90 @@ app.get("/", function(req, resp){
 });
 
 app.get("/", function(req, resp){
-	resp.render('registration.ejs', {pamoka: userRepository})
-	console.log(userRepository)
+	resp.redirect('/register')
 });
 
 
 app.post('/register', (req, res) => {
+	t1=true
+	t2=true
 	console.log('iki cia daeina')
 	name = req.body.vardas
 	email = req.body.email
 	pw1 = req.body.pw
 	pw2 = req.body.pw2
 	role = req.body.optradio
+	//
 	console.log(name + " " + email + " " + pw1 + " " + pw2 + " " +role );
-	if (pw1 != pw2)
-	{	
-		kl = {
-			klaida: "bybys"
-			
+	db.collection('users').find({'vardas': name}).toArray((err, result) => {
+    if (err) return console.log(err)
+		if(result.length > 0) {
+			t2=false
+			ema= 'Toks email jau yra'
+			emailas()
 		}
-		res.redirect("/register");
+		else{
+			emailas()
+		}
+		
+		
+	})
+	function emailas (){
+	db.collection('users').find({'emailas': email}).toArray((err, result) => {
+    if (err) return console.log(err)
+		if(result.length > 0) {
+			t2=false
+			va= 'Toks vardas jau užimtas'
+			darom()
+		}
+		else{
+			darom()
+		}
+		
+	})
+}	
+	//
+	if (pw1 != pw2)
+	{	t1=false
+		passw=  'Nesutampa slaptažodžiai'
+	} 
+	function darom(){
+		start()
 	}
+	function start(){
+		
+	if (t1==true && t2 == true){
+		db.collection('users').find().toArray((err, result) => {
+    if (err) return console.log(err)
+	var duomenys = {
+		vardas: name,
+		emailas: email,
+		pass:pw1,
+		rol:role,
+		registered: new Date().toLocaleString(),
+		pakeistas: new Date().toLocaleString()
+		
+		
+		}
+  db.collection('users').save(duomenys , (err, result) => {
+    if (err) return console.log(err)
+    res.redirect("register");
+  })
+})
+	}
+	else{
+		res.render('registration', {
+			em:  ema,
+			pass: passw,
+			vardas: name,
+			emailas: email,
+			vardass: va
+		});
+	}
+}
  })
  app.get("/register", function(req, resp){
-	db.collection('pamoka').find({"emailas": req.session.email}).toArray((err, result) => {
-    if (err) return console.log(err)
-    // renders index.ejs
-    resp.render('registration.ejs', {pamoka: result})
-  })
+    resp.render('registration');
 });
 
 app.listen(8002, function () {

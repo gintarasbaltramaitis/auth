@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html ng-app>
+<head>
+<link rel="stylesheet" href="css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="stiliai.css">
+  <title>Registration</title>
+  <meta charset="utf-8">
+</head>
+<body>
+
+
+<div align="center" class="container ">
+
+
+  <img  align="center" class="img-rounded" src="viko.png"> 	<br> <br>
+  
+  <h3>Asmens duomenys</h3>
+  
+  <form class="form-inline" action="/register" method="POST">
+	
+	<div class="input-group">
+		<input type="text" class="form-control" id="vardas" name="vardas" placeholder="Rodomas vardas" value="<% if(typeof vardas != "undefined"){%><%=vardas%><% } %>">
+	</div>
+	
+	<br>
+	<span style="color:red"> <% if(typeof vardass != "undefined") {%>  <%= vardass %> <% } %></span>
+	<br>
+	
+    <div class="input-group">
+		<input type="email" class="form-control" name="email" id="email" placeholder="Elektroninas paštas" value="<% if(typeof emailas != "undefined"){%><%=emailas%><% } %>" >
+	</div>
+	
+	
+	<br>
+	<span style="color:red"> <% if(typeof em != "undefined") {%>  <%= em %> <% } %></span>
+	<br>
+		
+    <div class="input-group">
+		<input type="password" class="form-control" id="pw1" name="pw" placeholder="Slaptažodis">
+	</div>
+	
+	<br>
+	<span id="pass"> </span>
+	<br>
+	
+	<div class="input-group">
+		<input type="password" class="form-control" id="pw2" name="pw2" placeholder="Pakartoti slaptažodį">
+	</div>
+	
+	<br>
+	<span style="color:red"> <% if(typeof pass != "undefined") {%>  <%= pass %> <% } %></span>
+	<br>
+	<div class="radio">
+      <label><input type="radio" id="rb1" name="optradio" value="1" checked="checked">Studentas</label>
+    </div>
+    <div class="radio">
+      <label><input type="radio" id="rb2" name="optradio" value="2" >Dėstytojas</label>
+    </div>
+	<br>
+	
+	<br>
+	<p><button  id="register" class="btn btn-primary">Registruotis</button></p>
+
+	<p><button style="" class="btn btn-primary">Atgal</button></p>
+  
+  </form>
+  
+
+</body>
+
+</html>

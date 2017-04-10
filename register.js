@@ -11,7 +11,6 @@ var email
 var pw1
 var pw2
 var role
-var klaida = 'bybys'
 var db
 var kl
 var t1
@@ -19,20 +18,7 @@ var t2
 var passw
 var ema
 var va
-var userRepository = [
-    {
-        id : 1,
-        name : 'Fun',
-        lastname : 'Time',
-        created_at : new Date()
-    },
-    {
-        id : 2,
-        name : 'Not fun',
-        lastname : 'Time',
-        created_at : new Date()
-    }
-];
+var tl
 var ObjectId = require('mongodb').ObjectID;
 MongoClient.connect('mongodb://viko:viko@ds133340.mlab.com:33340/viko', (err, database) => {
   if (err) return console.log(err)
@@ -73,7 +59,6 @@ app.post('/register', (req, res) => {
 	db.collection('users').find({'vardas': name}).toArray((err, result) => {
     if (err) return console.log(err)
 		if(result.length > 0) {
-			t2=false
 			ema= 'Toks email jau yra'
 			emailas()
 		}
@@ -87,7 +72,7 @@ app.post('/register', (req, res) => {
 	db.collection('users').find({'emailas': email}).toArray((err, result) => {
     if (err) return console.log(err)
 		if(result.length > 0) {
-			t2=false
+			t1=false
 			va= 'Toks vardas jau užimtas'
 			darom()
 		}
@@ -102,15 +87,20 @@ app.post('/register', (req, res) => {
 	{	t1=false
 		passw=  'Nesutampa slaptažodžiai'
 	} 
+	if (name == "" || email == "" || pw1 == "" || pw2 == "")
+	{
+		tl="Palikti tusti laukai"
+		t1=false
+	}
 	function darom(){
 		start()
 	}
 	function start(){
-		
-	if (t1==true && t2 == true){
+	if (t1==true){
 		db.collection('users').find().toArray((err, result) => {
     if (err) return console.log(err)
-	var duomenys = {
+		
+	var duomenys =({
 		vardas: name,
 		emailas: email,
 		pass:pw1,
@@ -119,10 +109,10 @@ app.post('/register', (req, res) => {
 		pakeistas: new Date().toLocaleString()
 		
 		
-		}
-  db.collection('users').save(duomenys , (err, result) => {
+		})
+  db.collection('users').save(duomenys, (err, result) => {
     if (err) return console.log(err)
-    res.redirect("register");
+    res.redirect("http://localhost:3000/login/");
   })
 })
 	}
@@ -132,7 +122,8 @@ app.post('/register', (req, res) => {
 			pass: passw,
 			vardas: name,
 			emailas: email,
-			vardass: va
+			vardass: va,
+			tuscia: tl
 		});
 	}
 }

@@ -31,17 +31,28 @@ app.use(express.static('public'))
 app.use(express.static('puslapis'))
 
 app.get("/", function(req, resp){
-	// if (req.session["sessionUser"])
-	// {
-		// resp.redirect("/paskyra");
+	if (req.session["sessionUser"])
+	{
+		resp.redirect("/paskyra");
 
-	// }
-	// else
-	// {
-		resp.redirect("/pamokos");
-	//}
+	}
+	else
+	{
+		resp.redirect("/login");
+	}
 });
 
+app.get("/login", function(req, resp){
+	if (req.session["sessionUser"])
+	{
+		resp.redirect("/paskyra");
+
+	}
+	else
+	{
+		resp.redirect("/login");
+	}
+});
 app.post("/login", function(req, resp){
 	
 	soap.createClient(url, function(error, client) {
@@ -109,7 +120,6 @@ app.get("/paskyra", function(request, response){
 app.get('/manopamokos', (req, res) => {
   db.collection('pamoka').find({"emailas": req.session.email}).toArray((err, result) => {
     if (err) return console.log(err)
-    // renders index.ejs
     res.render('pamokos.ejs', {pamoka: result})
   })
 })
@@ -161,27 +171,6 @@ app.post("/klausimas/naujas", function(req, res){
   })
 })
 });
-// app.post('/pamokos', (req, res) => {
-	
-	// db.collection('klausimas').find().toArray((err, result) => {
-    // if (err) return console.log(err)
-    // ilgis=result.length;
-	// var duomenys = {
-		// emailas:req.session.email,
-		// tema:req.body.tema,
-		// aprasymas:req.body.aprasymas,
-		// kalba:req.body.kalba,
-		// lygis:req.body.lygis,
-		// pamokos_id:ilgis
-		
-		
-		// }
-  // db.collection('pamoka').save(duomenys , (err, result) => {
-    // if (err) return console.log(err)
-    // res.redirect("/prideti/klausima");
-  // })
-// })
- // })
  app.get('/pamokos', (req, res) => {
   db.collection('pamoka').find().toArray((err, result) => {
     if (err) return console.log(err)
@@ -190,10 +179,6 @@ app.post("/klausimas/naujas", function(req, res){
   })
 })
 
-// app.get('/publikuoti/:id', (req, res) => {
-	// var id = req.params.id
-	// console.log(id)
-// })
 app.put('/pamokos', (req, res) => {
   console.log('iki cia daeina')
   var idas=req.body._id

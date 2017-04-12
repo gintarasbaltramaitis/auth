@@ -31,7 +31,6 @@
 </nav>
 <div align="center" class="container" method="/pamokos">
 <div class="container">	
-<a align="right" href="/pamoka" class="btn btn-primary btn-xl">Kuri pamoka</a>
 <h2>Top pamokos</h2>
 	<div class="panel panel-default">
 		<div class="panel-body">
@@ -55,6 +54,7 @@
 
 
 <% for(var i=0; i<pamoka.length; i++) {%>
+
 <% } %>	
 <h2>Pamokos(<%= pamoka.length %>)</h2>
 <br> <br>
@@ -67,6 +67,7 @@
 	
 		
 		<% for(var i=0; i<pamoka.length; i++) {%>
+		<% if (pamoka[i].publikuota == "true") {%>
 		<div class="row">
 		<div class="panel panel-default">
 		<div class="panel-body">
@@ -81,21 +82,16 @@
 				  <p align="left"><font size="2">Programavimo kalba: <%= pamoka[i].kalba %>| Aprašymas: <%= pamoka[i].aprasymas %></font></p>
 				  <p align="left">Sunkumo lygis: <font color="green"><b><%= pamoka[i].lygis %></b></font>  Spręsta kartu: <%= pamoka[i].kartu%>  Sukurta <%= pamoka[i].sukurta%></p>
 				<br>
-				<div align="left">
-				  <a href="/redaguoti/<%= pamoka[i]._id %>"class="btn btn-primary btn-xl">Redaguoti</a> 
-				 <button  onclick=trinti("<%= pamoka[i]._id %>") class="btn btn-primary btn-xl") >Trinti</button>
-				  <% if(pamoka[i].publikuota == "false"){%>
+				<div align="right">
+				 <button class="btn btn-primary btn-xl") >Pradėti</button>
 				  
-				  <button onclick=publikuoti("<%= pamoka[i]._id %>") class="btn btn-primary btn-xl">Publikuoti</button>
-				  <% } else {%>
-				  <button onclick=nebepublikuoti("<%= pamoka[i]._id %>") class="btn btn-primary btn-xl">Nebeblikuoti</button>
-				  <% } %>
 				  
 				  </div>
 				</div>	
 				</div></div>
 </div>
 <br><br>
+<% } %>		
 <% } %>					
 		
 
@@ -127,64 +123,6 @@
 	</div>
 </div>
 </div>
-<script>
-
-function trinti(lygis) {
-fetch('/pamokos/lygis', {
-    method: 'delete',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      '_id': lygis
-	  
-    })
-  }).then(function (response) {
-    window.location.reload()
-  })
-	
-}
-function nebepublikuoti(lygis) {
-fetch('/nebepublikuoti', {
-    method: 'put',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      '_id': lygis
-    })
-  })
-  .then(response => {
-    if (response.ok) {return response.json()
-	}
-		
-  })
-  .then(data => {
-    console.log(data)
-	window.location.reload()
-  })
-  
-
-}
-function publikuoti(lygis) {
-fetch('/publikuoti', {
-    method: 'put',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      '_id': lygis
-    })
-  })
-  .then(response => {
-    if (response.ok) {return response.json()
-	}
-		
-  })
-  .then(data => {
-    console.log(data)
-	window.location.reload()
-  })
-  
-
-}
-</script>
 <script src="main.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>

@@ -19,7 +19,6 @@ var user
 		db=database
        db.collection('users').find().toArray((err, result) => {
     if (err) return console.log(err)
-    // renders index.ejs
     user=result
 	testi()
 	 
@@ -27,6 +26,7 @@ var user
 	}
 
 })
+
 function testi(){
 var i = 0
 var service = {

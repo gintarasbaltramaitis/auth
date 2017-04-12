@@ -47,8 +47,9 @@ app.get("/", function(req, resp){
 
 app.post('/register', (req, res) => {
 	t1=true
-	t2=true
-	console.log('iki cia daeina')
+	va=""
+	ema=""
+	passw=""
 	name = req.body.vardas
 	email = req.body.email
 	pw1 = req.body.pw
@@ -59,7 +60,7 @@ app.post('/register', (req, res) => {
 	db.collection('users').find({'vardas': name}).toArray((err, result) => {
     if (err) return console.log(err)
 		if(result.length > 0) {
-			ema= 'Toks email jau yra'
+			va= 'Toks vardas jau uzimtas'
 			emailas()
 		}
 		else{
@@ -73,7 +74,7 @@ app.post('/register', (req, res) => {
     if (err) return console.log(err)
 		if(result.length > 0) {
 			t1=false
-			va= 'Toks vardas jau užimtas'
+			ema= 'Toks email jau yra'
 			darom()
 		}
 		else{

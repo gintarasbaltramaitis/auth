@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="css/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="stiliai.css">
+  <title>Registration</title>
+  <meta charset="utf-8">
+</head>
+<body>
+
+
+<div align="center" class="container ">
+
+
+  <img  align="center" class="img-rounded" src="viko.png"> 	<br> <br>
+  
+  <h3>Asmens duomenys</h3>
+  
+  <form class="form-inline">
+	
+	<div class="input-group">
+		<input type="text" class="form-control" id="vardas" name="vardas" placeholder="Rodomas vardas">
+	</div>
+	
+	<br>
+	<br>
+	
+    <div class="input-group">
+		<input type="email" class="form-control" name="email" id="email" placeholder="Elektroninas paštas">
+	</div>
+	
+	
+	<br>
+	<span id="emailas"> </span>
+	<br>
+		
+    <div class="input-group">
+		<input type="password" class="form-control" id="pw1" name="pw" placeholder="Slaptažodis">
+	</div>
+	
+	<br>
+	<span id="pass"> </span>
+	<br>
+	
+	<div class="input-group">
+		<input type="password" class="form-control" id="pw2" name="pw2" placeholder="Pakartoti slaptažodį">
+	</div>
+	
+	<br>
+	<br>
+	<div class="radio">
+      <label><input type="radio" id="rb1" checked="checked" name="optradio">Studentas</label>
+    </div>
+    <div class="radio">
+      <label><input type="radio" id="rb2" name="optradio">Dėstytojas</label>
+    </div>
+	<br> <br>
+	<p><button  id="register" class="btn btn-primary">Registruotis</button></p>
+
+	<p><button style="" class="btn btn-primary">Atgal</button></p>
+  
+  </form>
+  
+<script>
+function emaila()
+{
+document.getElementById("emailas").innerHTML = "Toks email adresas jau yra";
+}
+function pass()
+{
+document.getElementById("pass").innerHTML = "Nesutampa password";
+}
+var reg = document.getElementById('register')
+reg.addEventListener('click', function () {
+var vardas = document.getElementById('vardas').value
+var email = document.getElementById('email').value
+var pw1 = document.getElementById('pw1').value
+var pw2 = document.getElementById('pw2').value
+var role
+if(document.getElementById('rb1').checked) {
+role='studentas'
+}else if(document.getElementById('rb2').checked) {
+ role='destytojas'
+}
+  fetch('/register', {
+    method: 'post',
+    headers: {
+	'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      'vardas': vardas,
+	  'email': email,
+	  'pw1': pw1,
+	  'pw2': pw2,
+	  'role': role
+    })
+  })
+  alert('bybys')
+
+})
+
+</script>
+</body>
+
+</html>

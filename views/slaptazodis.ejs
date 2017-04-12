@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Slaptazodis</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="css/stiliai.css">
+  <link rel="stylesheet" href="css/bootstrap.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">VIKO</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="/paskyra">Paskyra</a></li>
+      <li><a href="/pamokos">Pamokos</a></li>
+      <% if (role == 2) { %>
+      <li><a href="/manopamokos">Mano pamogos</a></li>
+	  <% } %>
+    </ul>
+	<ul class="nav navbar-nav navbar-right">
+      <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Atsijungti</a></li>
+    </ul>
+  </div>
+</nav>
+<div align="center" class="container">
+<div class="panel-body">
+		
+			<div class="col-sm-2">
+			<h1 align="left"><%=vard%></h1>
+			<p align="left"><font size="2" color="gray"><% if (role == "1") { %> Studentas <%} else {%>Dėstytojas<%}%></font></p>
+			<img  align="center" class="img-responsive" src="viko.png">
+			<br>
+			<p align="left"><a href="/vardas">Keisti vardą</a></p>
+			<p align="left"><font color="gray">Keisti slaptažodį</font></p>
+			</div>
+			
+			<div class="col-sm-10"> 
+			<h2>Pakeisti slaptažodį</h2>
+			<div class="form-group">
+				<div class="input-group">
+					<input type="password" id="senas" placeholder="Senas slaptažodis">
+				</div>
+				<span style="color:red"> <% if(typeof klaida != "undefined") {%>  <%= klaida %> <% } %></span>
+				<br>	
+				<div class="input-group">
+					<input type="password" id="naujas1" placeholder="Naujas slaptažodis">
+				</div>
+				<br>
+				<div class="input-group">
+					<input type="password" id="naujas2" placeholder="Pakrtokite slaptažodį">
+				</div>
+				<span style="color:red"> <% if(typeof klaida2 != "undefined") {%>  <%= klaida2 %> <% } %></span>
+			</div>	
+			<button class="btn btn-primary" onclick=pakeisti()>Keisti</button>
+			</div>
+			<span style="color:green"> <% if(typeof pake != "undefined") {%>  <%= pake %> <% } %></span>
+			
+			
+			
+	</div>
+
+</div>
+<script>
+function pakeisti() {
+var pass = document.getElementById('senas').value
+var pass2 = document.getElementById('naujas1').value
+var pass3 = document.getElementById('naujas2').value
+fetch('/slaptazodiss', {
+    method: 'put',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      'senas': pass,
+	  'naujas1': pass2,
+	  'naujas2' :pass3
+    })
+  })
+  .then(response => {
+    if (response.ok) {return response.json()
+	}
+		
+  })
+  .then(data => {
+    console.log(data)
+	window.location.reload()
+  })
+  
+
+}
+</script>
+
+
+</body>
+
+</html>

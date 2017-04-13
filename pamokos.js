@@ -672,7 +672,9 @@ app.post("/spresti/:kid/:id", function(request, response){
 	}
 	}
 });
-
+app.get("/logout", function(req, res){
+	res.redirect('http://localhost:3000/logout/')
+})
 app.listen(8003, function () {
   console.log('Linstening on 8003 port!')
 })

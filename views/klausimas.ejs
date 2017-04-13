@@ -17,9 +17,9 @@
       <a class="navbar-brand" href="#">VIKO</a>
     </div>
     <ul class="nav navbar-nav">
-      <li><a href="#">Paskyra</a></li>
-      <li><a href="#">Pamokos</a></li>
-      <li><a href="#">Mano pamogos</a></li>
+      <li><a href="/paskyra">Paskyra</a></li>
+      <li><a href="/pamokos">Pamokos</a></li>
+      <li><a href="/manopamokos">Mano pamogos</a></li>
     </ul>
 	<ul class="nav navbar-nav navbar-right">
       <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Atsijungti</a></li>
@@ -29,16 +29,17 @@
 
 
 <div  class="container">
-<form class="form-inline" action="/klausimas/naujas" method="POST">
 <div class="row">
-<% for(var i=0; i<klausimas.length; i++) {%>
-
+<% for(var i=0; i<kiekis.length; i++) {%>
 
 <div class="btn-group button-group-left btn-primary btn-xs" >
-<span class=" w3-button w3-circle w3-white"><%= klausimas[i].kl_id %></span>
+<a href="/klausimas/naujas/<%= kiekis[i].kl_id %><%=kiekis[i].pamokos_id%>" class="w3-button w3-circle w3-white" name="jj"><%= kiekis[i].kl_id %></a>
 </div>
-
 <% } %>
+<br>
+<form class="form-inline" action="/klausimas/naujas" method="POST">
+
+
 
 <div class="btn-group button-group-left btn-primary btn-xs" >
 <button class=" w3-button w3-circle w3-white">+</button>
@@ -52,24 +53,24 @@
   
    
 	<div align="center" class="container">
-	<form class="form-inline" action="/pamokos" method="POST" >						
+	
+	<form class="form-inline" >						
 				<div class="col-sm-9">			
 					
 				<div class="input-group">
-					<input type="text" class="form-control" placeholder="Klausimas" name="vardas">
+					<input type="text" class="form-control" placeholder="Klausimas"<% if(typeof klausimas != "undefined") {%> value="<%=klausimas[0].vardas%>"<% } %> name="vardas" id="vardas">
 				</div>
 				<br><br><br>
 				<div class="input-group">
-		<textarea class="form-control" rows="15" cols="200" name="uzduotis"  placeholder="Užduotis"></textarea>
+		<textarea class="form-control" rows="15" cols="200" name="uzduotis" id="uzduotis"  placeholder="Užduotis"><% if(typeof klausimas != "undefined") {%><%=klausimas[0].uzduotis%> <% } %></textarea>
     </div>
 	
 	<br><br>
 	<div align="left">
-		<input type="text" align="left" class="form-control" name="atsakymas"  placeholder="Teisingas atsakymas">
+		<input type="text" align="left" class="form-control" name="atsakymas" id="atsakymas" <% if(typeof klausimas != "undefined") {%> value="<%=klausimas[0].atsakymas%>" <% } %> placeholder="Teisingas atsakymas">
 	</div>
 	<br> <br>
-	<a href="#" class="btn btn-primary btn-xl">Išsaugoti</a>
-	<a href="#" class="btn btn-primary btn-xl">Tęsti</a>
+	<button class="btn btn-primary btn-xl" onclick=pakeisti('<%=id%>')>Išsaugoti</button>
 	</div>
 	<div class="col-sm-3"> 
 			
@@ -78,7 +79,7 @@
 			<tr>
 				<th><p align="right"><font color="blue" size="2">Nauja skaidrė:</font>
 				<div class="input-group">
-					<input type="text" name="skaidre" class="form-control" placeholder="URL">
+					<input type="text" name="skaidre" <% if(typeof klausimas != "undefined") {%> value="<%=klausimas[0].skaidre%>" <% } %> id="skaidre" class="form-control" placeholder="URL">
 				</div>
 				</th>
 			</tr>
@@ -90,6 +91,36 @@
 </form>
   
   </div>
+<script>
+function pakeisti(idas) {
+var vardas = document.getElementById('vardas').value
+var uzduotis = document.getElementById('uzduotis').value
+var atsakymas = document.getElementById('atsakymas').value
+var skaidre= document.getElementById('skaidre').value
+var res=window.location.href
+var ida = res.substring(39, 40)
+fetch('/klausimas/pakeisti/'+ ida + idas, {
+    method: 'put',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+      'vardas': vardas,
+	  'uzduotis' : uzduotis,
+	  'atsakymas' : atsakymas,
+	  'skaidre' : skaidre
+    })
+  })
+  .then(response => {
+    if (response.ok) {return response.json()
+	}
+		
+  })
+  .then(data => {
+    console.log(data)
+	window.location.reload()
+  })
+  
 
+}
+</script>
 </body>
 </html>

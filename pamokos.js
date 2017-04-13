@@ -7,6 +7,9 @@ var session = require('express-session')
 var bodyparser = require('body-parser')
 var app = express()
 var rez
+var kl_id
+var ilgis
+var idas
 var pam
 var tem
 var ap
@@ -42,6 +45,8 @@ app.use("/pamoka",express.static('puslapis'));
 app.use("/redaguoti/:id",express.static('puslapis'));
 app.use("/slaptazodis",express.static('puslapis'));
 app.use("/prideti/klausima",express.static('puslapis'));
+app.use("/klausimas/naujas/:kid:id",express.static('puslapis'));
+
 app.use(express.static('public'))
 app.use(express.static('puslapis'))
 
@@ -297,7 +302,6 @@ app.get('/manopamokos', (req, res) => {
   db.collection('pamoka').find({"emailas": prisijunges}).toArray((err, result) => {
     if (err) return console.log(err)
 			pam=result
-		console.log(pam)
 		testi()
 		
   })
@@ -314,7 +318,6 @@ app.get('/manopamokos', (req, res) => {
   })
   }
 	function siusti(){
-	console.log(role)
   res.render('pamokos.ejs', {pamoka: pam, rol: role})
 	}
 	}
@@ -347,36 +350,123 @@ app.post('/pamoka/prideti', (req, res) => {
 		}
   db.collection('pamoka').save(duomenys , (err, result) => {
     if (err) return console.log(err)
-    res.redirect("/pamokos");
+	ieskoti()	
+	
+   
   })
 })
+function ieskoti(){
+	db.collection('pamoka').find({vardas: vard,
+		emailas:prisijunges,
+		tema:req.body.tema,
+		aprasymas:req.body.aprasymas,
+		kalba:req.body.kalba,
+		lygis:req.body.lygis}).toArray((err, result) => {
+    if (err) return console.log(err)
+		idas=result[0]._id
+		redi()
+		function redi(){
+		res.redirect("/prideti/1klausima/" + idas)
+		}
+	})
+	}
 	}
  })
 
-app.get("/prideti/klausima", function(request, response){
-	db.collection('klausimas').find().toArray((err, result) => {
-    if (err) return console.log(err)
-    response.render('klausimas.ejs', {klausimas: result})
-  })
+// app.get("/prideti/klausima/:id", function(request, response){
+	// db.collection('klausimas').find({"pamokos_id": ObjectId(request.params.id)}).toArray((err, result) => {
+    // if (err) return console.log(err)
+	// ilgis=result.length
+	// var i = result[0].pamokos_id
+    // response.render('klausimas.ejs', {klausimas: result, id: i})
+  // })
 	
+// });
+app.get("/klausimas/naujas/:kid:id", function(request, response){
+	var masyvas
+	var masyv
+	db.collection('klausimas').find({"kl_id": parseInt(request.params.kid) , "pamokos_id": ObjectId(request.params.id) }).toArray((err, result) => {
+    if (err) return console.log(err)
+	masyvas=result
+	console.log('cia dar veikia')  
+	siu()
+  })
+  function siu(){
+  db.collection('klausimas').find({"pamokos_id": ObjectId(request.params.id) }).sort({"kl_id": 1}).toArray((err, result) => {
+    if (err) return console.log(err)
+	masyv=result
+	console.log('cia dar veikia')
+    siunciam()
+  })
+  }
+  function siunciam(){
+	console.log(masyv)
+	console.log('|||||||||||||||||||')
+  response.render('klausimas.ejs', {klausimas: masyvas, kiekis: masyv, id: request.params.id})
+  }
 });
-app.post("/klausimas/naujas", function(req, res){
-	db.collection('klausimas').find().toArray((err, result) => {
+app.get("/prideti/1klausima/:id", function(req, res){
+	ilgis=1
+	db.collection('klausimas').find({"pamokos_id": ObjectId(idas)}).toArray((err, result) => {
     if (err) return console.log(err)
 	var duomenys = {
 		vardas:"",
 		uzduotis:"",
 		atsakymas:"",
 		skaidre:"",
+		pamokos_id: ObjectId(idas),
+		kl_id: ilgis
 		
 		
 		}
   db.collection('klausimas').save(duomenys , (err, result) => {
     if (err) return console.log(err)
-    res.redirect("/prideti/klausima");
+    res.redirect("/klausimas/naujas/" + ilgis + idas);
   })
 })
 });
+app.post("/klausimas/naujas", function(req, res){
+	ilgis=ilgis+1
+	db.collection('klausimas').find({"pamokos_id": ObjectId(idas)}).toArray((err, result) => {
+    if (err) return console.log(err)
+	var duomenys = {
+		vardas:req.body.vardas,
+		uzduotis:req.body.uzduotis,
+		atsakymas:req.body.atsakymas,
+		skaidre:req.body.skaidre,
+		pamokos_id: ObjectId(idas),
+		kl_id: ilgis
+		
+		
+		}
+		
+  db.collection('klausimas').save(duomenys , (err, result) => {
+    if (err) return console.log(err)
+    res.redirect("/klausimas/naujas/" + ilgis+ idas);
+  })
+})
+});
+
+app.put('/klausimas/pakeisti/:kid:id', (req, res) => {
+  console.log(req.params.id + "cia")
+  db.collection('klausimas')
+  .findOneAndUpdate({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid)}, {
+    $set: {
+      vardas: req.body.vardas,
+	  uzduotis: req.body.uzduotis,
+	  atsakymas: req.body.atsakymas,
+	  skaidre: req.body.skaidre,
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+    res.send(result)
+  })
+})
+
+
 app.get('/pamokos', (req, res) => {
 	if(!tiesa){
 		res.redirect('http://localhost:3000/login')

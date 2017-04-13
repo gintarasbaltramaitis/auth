@@ -107,7 +107,8 @@ app.post('/register', (req, res) => {
 		pass:pw1,
 		rol:role,
 		registered: new Date().toLocaleString(),
-		pakeistas: new Date().toLocaleString()
+		pakeistas: new Date().toLocaleString(),
+		daroma: ""
 		
 		
 		})

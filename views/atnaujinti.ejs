@@ -26,7 +26,7 @@
   </div>
 </nav>
 <div align="center" class="container">
-<h3>Pamokos pridėjimas</h3>
+<h3>Atnaujinti pamoka</h3>
   
   
   <form class="form-inline">
@@ -127,11 +127,15 @@
 
 <script>
 function atnaujinti() {
+var vardas = document.getElementById('tema').value
+var aprasymas = document.getElementById('aprasymas').value
 fetch('/atnaujinti', {
     method: 'put',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({
-      
+      'tema': vardas,
+	  'aprasymas': aprasymas
+	  
     })
   })
   .then(response => {
@@ -140,8 +144,6 @@ fetch('/atnaujinti', {
 		
   })
   .then(data => {
-    console.log(data)
-	window.location.reload()
   })
   
 

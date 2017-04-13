@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Klausimai</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="css/stiliai.css">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/w3.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">VIKO</a>
+    </div>
+    <ul class="nav navbar-nav">
+      <li><a href="/paskyra">Paskyra</a></li>
+      <li><a href="/pamokos">Pamokos</a></li>
+      <li><a href="/manopamokos">Mano pamogos</a></li>
+    </ul>
+	<ul class="nav navbar-nav navbar-right">
+      <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Atsijungti</a></li>
+    </ul>
+  </div>
+</nav>
+
+
+<div  class="container">
+<div class="row">
+
+<span> Klausimas: <%=klausimas[0].kl_id%>/<%= kiekis.length %> </span>
+<br>
+<form class="form-inline">
+
+
+</form>
+</div>
+</div>
+
+  <br> <br>
+  
+   
+	<div align="center" class="container">
+	
+	<form class="form-inline" action="/spresti/<%=kl%>/<%=klausimas[0].pamokos_id %>" method="POST" >						
+				<div class="col-sm-9">			
+					
+				<div class="input-group">
+					<input type="text" class="form-control" placeholder="Klausimas"<% if(typeof klausimas != "undefined") {%> value="<%=klausimas[0].vardas%>"<% } %> name="vardas" id="vardas">
+				</div>
+				<br><br><br>
+				<div class="input-group">
+		<textarea class="form-control" rows="15" cols="200" name="uzduotis" id="uzduotis"  placeholder="Užduotis"><% if(typeof klausimas != "undefined") {%><%=klausimas[0].uzduotis%> <% } %></textarea>
+    </div>
+	
+	<br><br>
+	<div align="left">
+		<input type="text" align="left" class="form-control" name="atsakymas" id="atsakymas" placeholder="Teisingas atsakymas">
+	</div>
+	<br> <br>
+	<button class="btn btn-primary btn-xl" >Bandyti</button>
+	</div>
+	<div class="col-sm-3"> 
+			
+			<table class="table" style="width:100%">
+
+			<tr>
+				<th><p align="right"><font color="blue" size="2">Nauja skaidrė:</font>
+				
+					<a type="text" name="skaidre" <% if(typeof klausimas != "undefined") {%> href="<%=klausimas[0].skaidre%>" <% } %> id="skaidre" class="form-control" placeholder="URL"> skaidre </a>
+				
+				</th>
+			</tr>
+			
+			</table>
+
+			
+			</div>
+</form>
+<span style="color:red"> <% if(typeof zinute != "undefined") {%>  <%= zinute %> <% } %></span>
+  
+  </div>
+<script>
+</script>
+</body>
+</html>

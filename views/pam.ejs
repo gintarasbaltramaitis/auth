@@ -43,6 +43,7 @@
 
 <div class="container">	
 	<div class="row">
+	<form action='/filtruoti' method='post'>
 	<div class="form-group col-sm-2">
 		Lygis:
 		<select name="lygis" class="form-control">
@@ -54,7 +55,7 @@
 	</div>
 	<div class="form-group col-sm-2">
 		Kalba:
-		<select name="lygis" class="form-control">
+		<select name="kalba" class="form-control">
 		<option >Visi</option>
 		<option >JavaScript</option>
 		<option >HTML</option>
@@ -63,10 +64,17 @@
 	</div>
 	<div class="form-group col-sm-2">
 		Dėstytojas:
-		<select name="lygis" class="form-control">
+		<select name="destytojas" class="form-control">
 		<option >Visi</option>
+		<% for(var i=0; i<destytojai.length; i++) {%>
+		<option><%=destytojai[i].vardas%></option>
+		<%}%>
 		</select>
+	
 	</div>
+	<br>
+	<button class="btn btn-primary btn-xl">filtruoti</button>
+	</form>
 	</div>
 	
 		
@@ -87,7 +95,7 @@
 				  <p align="left">Sunkumo lygis: <font color="green"><b><%= pamoka[i].lygis %></b></font>  Spręsta kartu: <%= pamoka[i].kartu%>  Sukurta <%= pamoka[i].sukurta%></p>
 				<br>
 				<div align="right">
-				 <a href="/pradeti/<%= pamoka[i]._id%>" class="btn btn-primary btn-xl") >Pradėti</a>
+				 <a href="/pradeti/<%= pamoka[i]._id%>/<%= pamoka[i].emailas%>" class="btn btn-primary btn-xl") >Pradėti</a>
 				  
 				  
 				  </div>
@@ -100,7 +108,7 @@
 		
 
 </div>
-
+<% if (typeof rezas[0] !== "undefined") { %>
 <h2>Nepabaigtos pamokos</h2>
 <br> <br>
 				
@@ -110,22 +118,23 @@
 	<div class="panel panel-default">
 		<div class="panel-body">
 				<div class="col-sm-2 col-md-2 col-lg-2">	
-				  <p align="left"><font size="4"><b>HTML</b></font></p>
-				  <p align="left"><font size="2" color="gray">Antanas</font></p>
+				  <p align="left"><font size="4"><b><%=rezas[0].tema%></b></font></p>
+				  <p align="left"><font size="2" color="gray"><%=rezas[0].vardas%></font></p>
 				</div>			
 				<div class="col-sm-7 col-md-7 col-lg-8">
-				  <p align="left"><font size="2">HTML</font></p>
-				  <p align="left"><font color="green"><b>Pradžiamokslis</b></font>Žmonių sprendė : 0| Vidutinis laikas: 20min| Pridėta: 2017-01-02| Redaguota: niekada</p>
+				  <p align="left"><font size="2"><%=rezas[0].kalba%></font></p>
+				  <p align="left"><font color="green"><b><%=rezas[0].lygis%></b></font>Žmonių sprendė : <%=rezas[0].kartu%>| Pridėta: <%=rezas[0].sukurta%></p>
 				<br>
 				<div align="left">
-				  <a href="#" class="btn btn-primary btn-xl">Sustabdyti</a>
-				  <a href="#" class="btn btn-primary btn-xl">Redaguoti</a>
-				  <button id="delete" >jo</button>
+				  <a href='/testi/<%=rezas[0]._id%>' < class="btn btn-primary btn-xl">Tęsti</a>
+
+
 				  </div>
 				</div>		
 		</div>
 	</div>
 </div>
+<% }%>
 </div>
 <script src="main.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>

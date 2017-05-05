@@ -29,7 +29,7 @@
 <h3>Atnaujinti pamoka</h3>
   
   
-  <form class="form-inline">
+  <form class="form-inline" action='/atnaujinti/<%= pamoka %>' method='post'>
 	
 	<div class="input-group">
 		<input type="text" class="form-control" id="tema" name="tema" value="<% if(typeof tema != "undefined"){%><%=tema%><% } %>" placeholder="Tema">
@@ -39,7 +39,7 @@
 	<br>
 	
     <div class="input-group">
-		<input type="text" class="form-control" id="aprasymas" name="aprasymas" value="<% if(typeof apra != "undefined"){%><%=apra%><% } %>" placeholder="Aprašymas"></textarea>
+		<input type="text" class="form-control" id="aprasymas" name="aprasymas" value="<% if(typeof aprasymas != "undefined"){%><%=aprasymas%><% } %>" placeholder="Aprašymas"></textarea>
     </div>
 	
 	<br>
@@ -117,7 +117,7 @@
 	
 	<br>
 	<br>
-	<p align="center"><button class="btn-primary btn-md" onclick=atnaujinti() >Toliau</button></p>
+	<p align="center"><button class="btn-primary btn-md" >Toliau</button></p>
 </form>
 <form action="/paskyra">
 	<p align="center"><button class="btn-primary btn-md">Atšaukti</button></p>

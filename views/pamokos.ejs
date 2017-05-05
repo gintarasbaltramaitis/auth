@@ -32,25 +32,22 @@
 <div align="center" class="container" method="/pamokos">
 <div class="container">	
 <a align="right" href="/pamoka" class="btn btn-primary btn-xl">Kuri pamoka</a>
-<h2>Top pamokos</h2>
+<% if (typeof topas !== "undefined") { %>
+<h2>Top pamoka</h2>
 	<div class="panel panel-default">
 		<div class="panel-body">
 				<div class="col-sm-2 col-md-2 col-lg-2">	
-				  <p align="left"><font size="4"><b>JavaScript</b></font></p>
-				  <p align="left"><font size="2" color="gray">Antanas</font></p>
+				  <p align="left"><font size="4"><b><%= topas.tema %></b></font></p>
+				  <p align="left"><font size="2" color="gray"><%= topas.vardas %></font></p>
 				</div>			
 				<div class="col-sm-7 col-md-7 col-lg-8">
-				  <p align="left"><font size="2">JavaScript</font></p>
-				  <p align="left"><b>Pradžiamokslis</b>   Žmonių sprendė : 0| Vidutinis laikas: 20min| Pridėta: 2017-01-02| Redaguota: niekada </p>
+				  <p align="left"><font size="2">Programavimo kalba: <%= topas.kalba %>| Aprašymas: <%= topas.aprasymas %></font></p>
+				  <p align="left">Sunkumo lygis: <font color="green"><b><%= topas.lygis %></b></font>  Spręsta kartu: <%= topas.kartu%>  Sukurta <%= topas.sukurta%></p>
 				  <br>
-				  <div align="left">
-				  <a href="#" class="btn btn-primary btn-xl">Sustabdyti</a>
-				  <a href="#" class="btn btn-primary btn-xl">Redaguoti</a>
-				  <a href="#" class="btn btn-primary btn-xl">Trinti</a>
-				  </div>
 				</div>		
 		</div>
 	</div>
+	<% }%>
 </div>
 
 
@@ -82,14 +79,14 @@
 				  <p align="left">Sunkumo lygis: <font color="green"><b><%= pamoka[i].lygis %></b></font>  Spręsta kartu: <%= pamoka[i].kartu%>  Sukurta <%= pamoka[i].sukurta%></p>
 				<br>
 				<div align="left">
-				  <a href="/redaguoti/<%= pamoka[i]._id %>"class="btn btn-primary btn-xl">Redaguoti</a> 
-				  <a href="/redaguoti/klausimus/1<%= pamoka[i]._id %>"class="btn btn-primary btn-xl">Redaguoti klausimus</a> 
-				 <button  onclick=trinti("<%= pamoka[i]._id %>") class="btn btn-primary btn-xl") >Trinti</button>
+				<form action='/redaguoti/<%= pamoka[i]._id %>' method='get'> <button class="btn btn-primary btn-xl">Redaguoti</button> </form>
+				  <a href='/redaguoti/klausimus/<%= pamoka[i]._id %>'class="btn btn-primary btn-xl">Redaguoti klausimus</a> 
+				 <form action='/trinti/<%= pamoka[i]._id %>' method='post'><button class="btn btn-primary btn-xl") >Trinti</button> </form>
 				  <% if(pamoka[i].publikuota == "false"){%>
 				  
-				  <button onclick=publikuoti("<%= pamoka[i]._id %>") class="btn btn-primary btn-xl">Publikuoti</button>
+				  <form action='/publikuoti/<%= pamoka[i]._id %>' method='post'><button class="btn btn-primary btn-xl">Publikuoti</button></form>
 				  <% } else {%>
-				  <button onclick=nebepublikuoti("<%= pamoka[i]._id %>") class="btn btn-primary btn-xl">Nebeblikuoti</button>
+				 <form action='/nepublikuoti/<%= pamoka[i]._id %>' method='post'> <button class="btn btn-primary btn-xl">Nebeblikuoti</button></form>
 				  <% } %>
 				  
 				  </div>
@@ -101,7 +98,7 @@
 		
 
 </div>
-
+<% for(var i=0; i<neispresta.length; i++)  { %>
 <h2>Nepabaigtos pamokos</h2>
 <br> <br>
 				
@@ -111,22 +108,18 @@
 	<div class="panel panel-default">
 		<div class="panel-body">
 				<div class="col-sm-2 col-md-2 col-lg-2">	
-				  <p align="left"><font size="4"><b>HTML</b></font></p>
-				  <p align="left"><font size="2" color="gray">Antanas</font></p>
+				  <p align="left"><font size="4"><b><%= neispresta[i].tema %></b></font></p>
+				  <p align="left"><font size="2" color="gray"><%= neispresta[i].vardas%></font></p>
 				</div>			
 				<div class="col-sm-7 col-md-7 col-lg-8">
-				  <p align="left"><font size="2">HTML</font></p>
-				  <p align="left"><font color="green"><b>Pradžiamokslis</b></font>Žmonių sprendė : 0| Vidutinis laikas: 20min| Pridėta: 2017-01-02| Redaguota: niekada</p>
+				  <p align="left"><font size="2">Programavimo kalba: <%= neispresta[i].kalba %>| Aprašymas: <%= neispresta[i].aprasymas %></font></p>
+				  <p align="left">Sunkumo lygis: <font color="green"><b><%= neispresta[i].lygis %></b></font>  Spręsta kartu: <%= neispresta[i].kartu%>  Sukurta <%= neispresta[i].sukurta%></p>
 				<br>
-				<div align="left">
-				  <a href="#" class="btn btn-primary btn-xl">Sustabdyti</a>
-				  <a href="#" class="btn btn-primary btn-xl">Redaguoti</a>
-				  <button id="delete" >jo</button>
-				  </div>
 				</div>		
 		</div>
 	</div>
 </div>
+<% }%>
 </div>
 <script>
 

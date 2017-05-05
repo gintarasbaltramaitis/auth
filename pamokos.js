@@ -55,110 +55,37 @@ app.get("/", function(req, res){
 res.redirect("/paskyra")
 })
 
-app.get("/paskyra/:id", function(req, res){
-	
-	prisijunges=req.params.id
-	db.collection('users').find({_id: ObjectId(prisijunges)}).toArray((err, result) => {
-    if (err) return console.log(err)
-	prisijunges=result[0].emailas
-	vard = result[0].vardas
-	res.redirect('/paskyra')
-	})
-
-	
-	
-	
-});
-function ifthis()
-{
-	if (prisijunges == null)
-	{
-		tiesa=false
-	}
-	else{
-		tiesa=true
-	}
+function sendErrorResponse(response, payload) {
+    response.send({
+        'success': false,
+        'payload': payload
+    });
 }
-
-app.get("/paskyra", function(req, res){
-	ifthis()
-	if(!tiesa){
-		res.redirect('http://localhost:3000/login')
-	}
-	else{
-	db.collection('users').find({"emailas": prisijunges}).toArray((err, result) => {
+function sendSuccessResponse(response, payload) {
+    response.send({
+        'success': true,
+        'payload': payload
+    });
+}
+app.get('/paskyra/:email', function(req, res){
+	db.collection('users').find({"emailas": req.params.email}).toArray((err, result) => {
     if (err) return console.log(err)
-    res.render('paskyra.ejs', {reg: result})
+    sendSuccessResponse(res, result)
 	})
-	}
 })
-app.get('/slaptazodis', function(req, res){
-	if(!tiesa){
-		res.redirect('http://localhost:3000/login')
-	}
-	else{
-	db.collection('users').find({"emailas": prisijunges}).toArray((err, result) => {
+app.get('/slaptazodis/:email', function(req, res){
+	db.collection('users').find({"emailas": req.params.email}).toArray((err, result) => {
     if (err) return console.log(err)
-		rez=result
-	
-		siusti()
+		sendSuccessResponse(res, result)
 	})
-	function siusti(){
-    res.render('slaptazodis.ejs', {
-			role: rez[0].rol,
-			vard: rez[0].vardas,
-			klaida:  zin,
-			klaida2: zin2,
-			pake: pak
-	})
-	pak=""
-	zin=""
-	zin2=""
-	}
 		
-	}
 });
-app.put('/slaptazodiss', (req, res) => {
-	pak=""
-	zin=""
-	zin2=""
-	taip=true
-  var senas=req.body.senas
-  var naujas=req.body.naujas1
-  var naujas2=req.body.naujas2
-  db.collection('users').find({'emailas': prisijunges}).toArray((err, result) => {
-    if (err) return console.log(err)
-		if(result[0].pass != senas)
-		{
-			zin = 'Neteisingas senas slaptazodis'
-			taip=false
-			toliau()
-		}
-		else{
-			toliau()
-		}
-		
-	})
-	function toliau(){
-		if (naujas != naujas2)
-		{
-			zin2 = 'slaptazodziai nesutampa'
-			taip = false;
-			keiciam()
-		}
-		else
-		{
-			keiciam()
-		}
-	}
-	function keiciam()
-	{
-		if(taip)
-		{
-			db.collection('users')
-		.findOneAndUpdate({"emailas": prisijunges}, {
+app.put('/slapt/:email/:old', (req, res) => {
+
+	db.collection('users')
+	.findOneAndUpdate({"emailas": req.params.email}, {
     $set: {
-      pass: naujas,
+      pass: req.params.old,
 	  pakeistas: new Date().toLocaleString()
     }
   }, {
@@ -166,89 +93,87 @@ app.put('/slaptazodiss', (req, res) => {
     upsert: true
   }, (err, result) => {
     if (err) return res.send(err)
-	pak='Slaptažodis sėkmingai pakeistas'
-    res.send(result)
+    sendSuccessResponse(res, result)
 	
   })
 		
 	
-		}
-		else{
-			
-		res.redirect("slaptazodis");
-		console.log('siunciu duomenys')
-		}
-		
-	}
   
 })
-app.get("/vardas", function(req, res){
-	if(!tiesa){
-		res.redirect('http://localhost:3000/login')
-	}
-	else{
-	db.collection('users').find({"emailas": prisijunges}).toArray((err, result) => {
+app.get("/vardas/:email", function(req, res){
+	db.collection('users').find({"emailas": req.params.email}).toArray((err, result) => {
     if (err) return console.log(err)
-		rez=result
-		siusti()
+		sendSuccessResponse(res, result)
 	})
-	function siusti(){
-    res.render('vardas.ejs', {
-			role: rez[0].rol,
-			vard: rez[0].vardas,
-			klaida:  zin,
-			pake: zin2
-	})
-	zin=""
-	zin2=""
-		}
-	}
 })
-app.put('/vardass', (req, res) => {
-	
-	zin=""
-	zin2=""
-  var senas=req.body.vardas
-  db.collection('users').find({"vardas": senas}).toArray((err, result) => {
-    if (err) return console.log(err)
-		if (result.length > 0){
-			zin = 'Toks vardas jau užimtas'
-			res.redirect("/vardas")
-		}
-		else { darytii()}
-  })
-		
-		function darytii(){
+app.put('/vard/:email/:old', (req, res) => {
 			db.collection('users')
-		.findOneAndUpdate({"emailas": prisijunges}, {
+		.findOneAndUpdate({"emailas": req.params.email}, {
     $set: {
-      vardas: senas
+      vardas: req.params.old
     }
   }, {
     sort: {_id: -1},
     upsert: true
   }, (err, result) => {
     if (err) return res.send(err)
-	zin2='Vardas pakeistas'
-    res.send(result)
+	sendSuccessResponse(res, result)
 	
   })
 		
   
-		}
 })
-app.get("/pamoka", function(req, res){
-		if(!tiesa){
-		res.redirect('http://localhost:3000/login')
-	}
-	else{
-    res.render('prideti_pam.ejs', {
-			zinute: zin,
-			tema: tem,
-			apra: ap
-	})
-	zin=""
-		}
+
+app.get('/pamokoos', function (req, res) {
+    db.collection('pamoka').find({"publikuota": "true"}).toArray((err, result) =>{
+        sendSuccessResponse(res, result);
+
+    });
+});
+app.get('/manopamokos/:email', (req, res) => {
+  db.collection('pamoka').find({"emailas": req.params.email}).toArray((err, result) => {
+    if (err) return console.log(err)	
+	sendSuccessResponse(res, result)
+  })
+})
+app.put('/publikuoti/:id', (req, res) => {
+  db.collection('pamoka')
+  .findOneAndUpdate({"_id": ObjectId(req.params.id)}, {
+    $set: {
+      publikuota: "true"
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+    sendSuccessResponse(res, result)
+  })
+})
+app.put('/nebepublikuoti/:id', (req, res) => {
+  db.collection('pamoka')
+  .findOneAndUpdate({"_id": ObjectId(req.params.id)}, {
+    $set: {
+      publikuota: "false"
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+    sendSuccessResponse(res, result)
+  })
+})
+app.delete('/pamokos/:id', (req, res) => {
+  db.collection('pamoka').findOneAndDelete({"_id": ObjectId(req.params.id)}, (err, result) => {
+
+    if (err) return console.log(err)
+  })
+  db.collection('klausimas').deleteMany({"pamokos_id": ObjectId(req.params.id)}, (err, result) => {
+
+    if (err) return console.log(err)
+		sendSuccessResponse(res, result)
+  })
 })
 app.get("/redaguoti/:id", function(req, res){
 		if(!tiesa){
@@ -270,110 +195,57 @@ app.get("/redaguoti/:id", function(req, res){
 	})
 		}
 })
-app.get("/redaguoti/klausimus/:kid:id", function(request, response){
-		if(!tiesa){
-		response.redirect('http://localhost:3000/login')
-	}
-	else{
-	var masyvas
-	var masyv
-	db.collection('klausimas').find({"kl_id": parseInt(request.params.kid) , "pamokos_id": ObjectId(request.params.id) }).toArray((err, result) => {
+app.get("/pam/:id", function(req, res){
+	db.collection('pamoka').find({_id: ObjectId(req.params.id)}).toArray((err, result) => {
     if (err) return console.log(err)
-	masyvas=result
-	console.log('cia dar veikia')  
-	siu()
-  })
-  function siu(){
-  db.collection('klausimas').find({"pamokos_id": ObjectId(request.params.id) }).sort({"kl_id": 1}).toArray((err, result) => {
-    if (err) return console.log(err)
-	masyv=result
-	console.log('cia dar veikia')
-    siunciam()
-  })
-  }
-  function siunciam(){
-	console.log(masyv)
-	console.log('|||||||||||||||||||')
-  response.render('klausimas.ejs', {klausimas: masyvas, kiekis: masyv, id: request.params.id})
-  }
-		}
+		sendSuccessResponse(res, result)
+	})
 })
-app.put('/atnaujinti', (req, res) => {
-	console.log("as cia")
-	if(req.body.tema == "" || req.body.aprasymas == ""){
-		console.log('tusti laukai')
-		res.render('atnaujinti.ejs', {
-		zinute: "Palikti tusti laukai"		
-		})
-	}
-	else{
-		
+app.get("/destytojai", function(req, res){
+	db.collection('users').find({rol: '2'}).toArray((err, result) => {
+    if (err) return console.log(err);
+	sendSuccessResponse(res, result)
+	
+	})
+})
+app.put('/pamoka/atnaujinti/:id/:tema/:aprasymas/:kalba/:lygis', (req, res) => {	
+	console.log(req.params.tema)
   db.collection('pamoka')
-  .findOneAndUpdate({"_id": ObjectId(rez[0]._id)}, {
+  .findOneAndUpdate({"_id": ObjectId(req.params.id)}, {
     $set: {
-      tema: req.body.tema,
-	  aprasymas: req.body.aprasymas
+      tema: req.params.tema,
+	  aprasymas: req.params.aprasymas,
+	  kalba: req.params.kalba,
+	  lygis: req.params.lygis
     }
   }, {
     sort: {_id: -1},
     upsert: true
   }, (err, result) => {
     if (err){ return res.send(err)}
+	sendSuccessResponse(res, result)
   })
 
  
-	}
+	
 })	
-app.get('/manopamokos', (req, res) => {
-	if(!tiesa){
-		res.redirect('http://localhost:3000/login')
-	}
-	else{
-	var pam
-	var role
-  db.collection('pamoka').find({"emailas": prisijunges}).toArray((err, result) => {
+app.get("/klausimas/:id", function(req, res){
+	db.collection('klausimas').find({pamokos_id: ObjectId(req.params.id)}).toArray((err, result) => {
     if (err) return console.log(err)
-			pam=result
-		testi()
-		
-  })
-  function testi(){
-  db.collection('users').find({"emailas": prisijunges}).toArray((err, resultas) => {
-    if (err) return console.log(err)
-		role=resultas[0].rol
-	if (role != 2) {
-		res.send('ne cia pateikei')
-	}
-	else{
-		siusti()
-	}
-  })
-  }
-	function siusti(){
-  res.render('pamokos.ejs', {pamoka: pam, rol: role})
-	}
-	}
+	sendSuccessResponse(res, result)
+	
+	})
 })
-app.post('/pamoka/prideti', (req, res) => {
-	zin = ""
-	tem = req.body.tema
-	ap = req.body.aprasymas
-
-	if(tem == "" || ap == "")
-	{
-		zin="Kažkur palikti tušti laukai"
-		res.redirect("/pamoka")
-	}
-	else{
+app.post('/pamoka/prideti/:email/:tema/:aprasymas/:kalba/:lygis/:vard', (req, res) => {
 	db.collection('pamoka').find().toArray((err, result) => {
     if (err) return console.log(err)
 	var duomenys = {
-		vardas: vard,
-		emailas:prisijunges,
-		tema:req.body.tema,
-		aprasymas:req.body.aprasymas,
-		kalba:req.body.kalba,
-		lygis:req.body.lygis,
+		vardas: req.params.vard,
+		emailas:req.params.email,
+		tema:req.params.tema,
+		aprasymas:req.params.aprasymas,
+		kalba:req.params.kalba,
+		lygis:req.params.lygis,
 		publikuota: "false",
 		sukurta: (new Date()).toISOString().slice(0,10),
 		kartu: "0"
@@ -382,198 +254,223 @@ app.post('/pamoka/prideti', (req, res) => {
 		}
   db.collection('pamoka').save(duomenys , (err, result) => {
     if (err) return console.log(err)
-	ieskoti()	
-	
+		sendSuccessResponse(res, result)
    
   })
 })
-function ieskoti(){
-	db.collection('pamoka').find({vardas: vard,
-		emailas:prisijunges,
-		tema:req.body.tema,
-		aprasymas:req.body.aprasymas,
-		kalba:req.body.kalba,
-		lygis:req.body.lygis}).toArray((err, result) => {
-    if (err) return console.log(err)
-		idas=result[0]._id
-		redi()
-		function redi(){
-		res.redirect("/prideti/1klausima/" + idas)
-		}
-	})
-	}
-	}
+
  })
-app.get("/klausimas/naujas/:kid:id", function(request, response){
-	var masyvas
-	var masyv
-	db.collection('klausimas').find({"kl_id": parseInt(request.params.kid) , "pamokos_id": ObjectId(request.params.id) }).toArray((err, result) => {
+
+app.post("/klausimai/:id", function(req, res){
+	var rez
+	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
     if (err) return console.log(err)
-	masyvas=result
-	console.log('cia dar veikia')  
-	siu()
-  })
-  function siu(){
-  db.collection('klausimas').find({"pamokos_id": ObjectId(request.params.id) }).sort({"kl_id": 1}).toArray((err, result) => {
+		rez=result
+	toliau()
+})
+	function toliau()
+	{
+		if (rez.length == 0)
+		{
+		var ilgis=1
+		db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
+		if (err) return console.log(err)
+		var duomenys = {
+		vardas:"",
+		uzduotis:"",
+		atsakymas:"",
+		skaidre:"",
+		pamokos_id: ObjectId(req.params.id),
+		kl_id: ilgis
+		
+		
+		}
+  db.collection('klausimas').save(duomenys , (err, resultas) => {
     if (err) return console.log(err)
-	masyv=result
-    siunciam()
+    sendSuccessResponse(res, 'dar')
   })
-  }
-  function siunciam(){
-  response.render('klausimas.ejs', {klausimas: masyvas, kiekis: masyv, id: request.params.id})
-  }
+})
+		}
+		else
+		{
+		db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
+		if (err) return console.log(err)
+		sendSuccessResponse(res, result)
+		})
+		}
+		
+		
+		
+	}
 });
-app.get("/prideti/1klausima/:id", function(req, res){
-	ilgis=1
-	db.collection('klausimas').find({"pamokos_id": ObjectId(idas)}).toArray((err, result) => {
+app.post("/naujas/klausimas/:id", function(req, res){
+	var rez
+	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
+    if (err) return console.log(err)
+		console.log(result)
+		rez=result
+	toliau()
+})
+	function toliau()
+	{
+	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
     if (err) return console.log(err)
 	var duomenys = {
 		vardas:"",
 		uzduotis:"",
 		atsakymas:"",
 		skaidre:"",
-		pamokos_id: ObjectId(idas),
-		kl_id: ilgis
+		pamokos_id: ObjectId(req.params.id),
+		kl_id: rez.length + 1
 		
 		
 		}
-  db.collection('klausimas').save(duomenys , (err, result) => {
+  db.collection('klausimas').save(duomenys , (err, resultas) => {
     if (err) return console.log(err)
-    res.redirect("/klausimas/naujas/" + ilgis + idas);
+	daryti()
   })
 })
+	}
+	function daryti()
+	{
+	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
+    if (err) return console.log(err)
+		sendSuccessResponse(res, result)
+	})
+	}
+		
+		
+		
+	
 });
-app.post("/klausimas/naujas", function(req, res){
-	ilgis=ilgis+1
-	db.collection('klausimas').find({"pamokos_id": ObjectId(idas)}).toArray((err, result) => {
+app.get("/konkretus/klausimas/:kid/:id", function(req, res){
+
+	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
     if (err) return console.log(err)
-	var duomenys = {
-		vardas:req.body.vardas,
-		uzduotis:req.body.uzduotis,
-		atsakymas:req.body.atsakymas,
-		skaidre:req.body.skaidre,
-		pamokos_id: ObjectId(idas),
-		kl_id: ilgis
-		
-		
-		}
-		
-  db.collection('klausimas').save(duomenys , (err, result) => {
-    if (err) return console.log(err)
-    res.redirect("/klausimas/naujas/" + ilgis+ idas);
-  })
+		sendSuccessResponse(res, result)
 })
+	
 });
-app.put('/klausimas/pakeisti/:kid:id', (req, res) => {
-  console.log(req.params.id + "cia")
+app.put('/atnaujinti/klausimas/:kid/:id/:vardas/:uzduotis/:atsakymas/:skaidre', (req, res) => {
+  console.log(req.params.id)
+  console.log(req.params.vardas)
+  console.log(req.params.skaidre)
   db.collection('klausimas')
   .findOneAndUpdate({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid)}, {
     $set: {
-      vardas: req.body.vardas,
-	  uzduotis: req.body.uzduotis,
-	  atsakymas: req.body.atsakymas,
-	  skaidre: req.body.skaidre,
+      vardas: req.params.vardas,
+	  uzduotis: req.params.uzduotis,
+	  atsakymas: req.params.atsakymas,
+	  skaidre: req.params.skaidre,
     }
   }, {
     sort: {_id: -1},
     upsert: true
   }, (err, result) => {
     if (err) return res.send(err)
-    res.send(result)
+    sendSuccessResponse(res, result)
   })
 })
-app.get('/pamokos', (req, res) => {
-	if(!tiesa){
-		res.redirect('http://localhost:3000/login')
-	}
-	else{
-	var pam
-	var role
-	var pamo
-	var ii=0
-  db.collection('pamoka').find({"publikuota": "true"}).toArray((err, result) => {
-    if (err) return console.log(err)
-			pam=result
-		console.log(pam)
-		testi()
-		
-  })
-  function testi(){
-  db.collection('users').find({"emailas": prisijunges}).toArray((err, resultas) => {
-    if (err) return console.log(err)
-		role=resultas[0].rol
-		siusti()
-  })
-  }
-	function siusti(){
-	console.log(role)
-  res.render('pam.ejs', {pamoka: pam, rol: role})
-	}
-	}
-})
-app.put('/publikuoti', (req, res) => {
-  var idas=req.body._id
-  console.log(idas)
-  db.collection('pamoka')
-  .findOneAndUpdate({"_id": ObjectId(idas)}, {
-    $set: {
-      publikuota: "true"
-    }
-  }, {
-    sort: {_id: -1},
-    upsert: true
-  }, (err, result) => {
-    if (err) return res.send(err)
-    res.send(result)
-  })
-})
-app.put('/nebepublikuoti', (req, res) => {
-  var idas=req.body._id
-  console.log(idas)
-  db.collection('pamoka')
-  .findOneAndUpdate({"_id": ObjectId(idas)}, {
-    $set: {
-      publikuota: "false"
-    }
-  }, {
-    sort: {_id: -1},
-    upsert: true
-  }, (err, result) => {
-    if (err) return res.send(err)
-    res.send(result)
-  })
-})
-app.delete('/pamokos/:id', (req, res) => {
-	var idas=req.body._id
-  db.collection('pamoka').findOneAndDelete({"_id": ObjectId(idas)}, (err, result) => {
+app.get('/filtras/:kalba/:lygis/:destytojas', (req, res) => {
+	console.log(req.params.kalba)
 
-    if (err) return console.log(err)
-  })
-  db.collection('klausimas').deleteMany({"pamokos_id": ObjectId(idas)}, (err, result) => {
 
-    if (err) return console.log(err)
-		res.send('istrinta')
-  })
+
+		if(req.params.kalba == 'Visi' && req.params.lygis == 'Visi' && req.params.destytojas == 'Visi')
+		{
+			db.collection('pamoka').find({publikuota: 'true'}).toArray((err, result) => {
+			if (err) return console.log(err)
+			sendSuccessResponse(res, result)
+			})
+		}
+		else if(req.params.kalba != 'Visi' && req.params.lygis == 'Visi' && req.params.destytojas == 'Visi')
+		{
+			db.collection('pamoka').find({publikuota: 'true', kalba: req.params.kalba}).toArray((err, result) => {
+			if (err) return console.log(err)
+			sendSuccessResponse(res, result)
+			})
+			
+		}
+		else if(req.params.kalba == 'Visi' && req.params.lygis != 'Visi' && req.params.destytojas == 'Visi')
+		{
+			db.collection('pamoka').find({publikuota: 'true', lygis: req.params.lygis}).toArray((err, result) => {
+			if (err) return console.log(err)
+			sendSuccessResponse(res, result)
+			})
+			
+		}
+		else if(req.params.kalba == 'Visi' && req.params.lygis == 'Visi' && req.params.destytojas != 'Visi')
+		{
+			db.collection('pamoka').find({publikuota: 'true', vardas: req.params.destytojas}).toArray((err, result) => {
+			if (err) return console.log(err)
+			sendSuccessResponse(res, result)
+			})
+			
+		}
+		else if(req.params.kalba != 'Visi' && req.params.lygis != 'Visi' && req.params.destytojas == 'Visi')
+		{
+			db.collection('pamoka').find({publikuota: 'true', kalba: req.params.kalba, lygis: req.params.lygis}).toArray((err, result) => {
+			if (err) return console.log(err)
+			sendSuccessResponse(res, result)
+			})
+			
+		}
+		else if(req.params.kalba != 'Visi' && req.params.lygis == 'Visi' && req.params.destytojas != 'Visi')
+		{
+			db.collection('pamoka').find({publikuota: 'true', vardas: req.params.destytojas, kalba: req.params.kalba}).toArray((err, result) => {
+			if (err) return console.log(err)
+			sendSuccessResponse(res, result)
+			})
+			
+		}
+		else if(req.params.kalba == 'Visi' && req.params.lygis != 'Visi' && req.params.destytojas != 'Visi')
+		{
+			db.collection('pamoka').find({publikuota: 'true', vardas: req.params.destytojas, lygis: req.params.lygis}).toArray((err, result) => {
+			if (err) return console.log(err)
+			sendSuccessResponse(res, result)
+			})
+			
+		}
+		else
+		{
+			db.collection('pamoka').find({publikuota: 'true', vardas: req.params.destytojas, lygis: req.params.lygis, kalba: req.params.kalba}).toArray((err, result) => {
+			if (err) return console.log(err)
+			sendSuccessResponse(res, result)
+			})
+		}
+	
+	
 })
-app.get('/pradeti/:id', (req, res) => {
-	var kartu
+
+
+app.get('/pradeti/:id/:email/:email2', (req, res) => {
 	var rez
-	if(!tiesa){
-		res.redirect('http://localhost:3000/login')
-	}
-	else{
-		db.collection('users').find({"emailas": prisijunges}).toArray((err, result) => {
+	var kartai
+	db.collection('users').find({"emailas": req.params.email}).toArray((err, result) => {
     if (err){ return console.log(err)}
 		console.log(result)
-		rez=result[0].daroma
-		pradeti()
-		})
-		function pradeti(){
+		rez=result
+		toliau()
+	})
+	function toliau()
+	{
+		
+		if (rez[0].daroma== undefined || rez[0] == 'nera')
+		{
+	    db.collection('pamoka').find({"_id": ObjectId(req.params.id)}).toArray((err, result) =>{
+			kartai=parseInt(result[0].kartu)+1
+			console.log(kartai)
+			console.log('cia')
+			update()
+
+		});
+		function update(){
 		db.collection('users')
-		.findOneAndUpdate({"emailas": prisijunges}, {
+		.findOneAndUpdate({"emailas": req.params.email}, {
 		$set: {
-		daroma: req.params.id
+		daroma: req.params.id,
+		kl: 1,
+		kieno: req.params.email2
 		}
 		}, {
 		sort: {_id: -1},
@@ -581,58 +478,101 @@ app.get('/pradeti/:id', (req, res) => {
 		}, (err, result) => {
 		if (err) return res.send(err)
 		})
-		
-		db.collection('pamoka').find({_id: ObjectId(req.params.id)}).toArray((err, result) => {
-		if (err) return console.log(err)
-		db()
-		function db(){
-		kartu=parseInt(result[0].kartu)+1
-		console.log(kartu)
-		ivedam()
-		}
-		})
-		function ivedam(){
-		db.collection('pamoka')
+				db.collection('pamoka')
 		.findOneAndUpdate({"_id": ObjectId(req.params.id)}, {
 		$set: {
-		kartu: kartu
+		kartu: kartai
 		}
 		}, {
 		sort: {_id: -1},
 		upsert: true
 		}, (err, result) => {
 		if (err) return res.send(err)
+			sendSuccessResponse(res, result)
 		})
 		}
 		}
-			res.redirect("/spresti/1/"+req.params.id)
+		else 
+		{
+			sendSuccessResponse(res, 'pamoka jau daroma')
 		}
-		// baigiasi funcija
+		
+	}
+
 	
 	
 })
 app.get("/spresti/:kid/:id", function(request, response){
-	var masyvas
-	var masyv
+
 	db.collection('klausimas').find({"kl_id": parseInt(request.params.kid) , "pamokos_id": ObjectId(request.params.id) }).toArray((err, result) => {
     if (err) return console.log(err)
-	masyvas=result
-	console.log(masyvas)
-	console.log('1')
-	siu()
+	sendSuccessResponse(response, result)
   })
-  function siu(){
+
+  // response.render('spresti.ejs', {klausimas: masyvas, kl: request.params.kid, kiekis: masyv, id: request.params.id, zinute: zin})
+});
+app.get("/kiekis/:kid/:id", function(request, response){
+
   db.collection('klausimas').find({"pamokos_id": ObjectId(request.params.id) }).sort({"kl_id": 1}).toArray((err, result) => {
     if (err) return console.log(err)
-	masyv=result
-    siunciam()
+	sendSuccessResponse(response, result)
   })
-  }
-  function siunciam(){
-	console.log(masyvas)
-	console.log('2')
-  response.render('spresti.ejs', {klausimas: masyvas, kl: request.params.kid, kiekis: masyv, id: request.params.id, zinute: zin})
-  }
+
+  // response.render('spresti.ejs', {klausimas: masyvas, kl: request.params.kid, kiekis: masyv, id: request.params.id, zinute: zin})
+});
+app.put("/tikrinti/:kid/:id/:atsakymas/:email", function(req, res){
+	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid)}).toArray((err, result) => {
+    if (err){ return console.log(err)}
+		rez=result[0].atsakymas
+		tikrinti()
+	})
+	function tikrinti()
+	{	var tarp
+		if(rez == req.params.atsakymas)
+		{
+			db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
+		if (err){ return console.log(err)}
+		tarp=result.length
+		console.log(result.length)
+		toliau()
+		})
+		function toliau()
+		{
+			if(req.params.kid == tarp)
+			{
+				
+				db.collection('users').update({"emailas": req.params.email}, {$unset: {"daroma": 1}})
+				db.collection('users').update({"emailas": req.params.email}, {$unset: {"kl": 1}})
+				db.collection('users').update({"emailas": req.params.email}, {$unset: {"kieno": 1}})
+				sendSuccessResponse(res, 'sveikinu')
+			}
+			else
+			{
+				var du =parseInt(req.params.kid) + 1
+				  db.collection('users')
+				.findOneAndUpdate({"emailas": req.params.email}, {
+				$set: {
+				kl: du
+				}
+				}, {
+				sort: {_id: -1},
+				upsert: true
+				}, (err, result) => {
+				if (err){ return res.send(err)}
+				sendSuccessResponse(res, 'teisingai')
+				})
+				
+			}
+		}
+			
+		}
+		else
+		{
+			sendSuccessResponse(res, 'super')
+		}
+		
+	}
+
 });
 app.post("/spresti/:kid/:id", function(request, response){
 	zin='neteisingas atsakymas'
@@ -647,7 +587,6 @@ app.post("/spresti/:kid/:id", function(request, response){
 	function t(){
 		db.collection('klausimas').find({"pamokos_id": ObjectId(request.params.id) }).toArray((err, result) => {
     if (err) return console.log(err)
-		console.log(result)
 		klausimu=result.length
 		m()
 		})
@@ -662,7 +601,6 @@ app.post("/spresti/:kid/:id", function(request, response){
 		}
 		else{
 		klausimo_nr = parseInt(klausimo_nr) + 1
-		console.log('as cia')
 		zin=""
 		response.redirect("/spresti/"+ klausimo_nr + "/" + request.params.id)
 		}
@@ -675,6 +613,78 @@ app.post("/spresti/:kid/:id", function(request, response){
 app.get("/logout", function(req, res){
 	res.redirect('http://localhost:3000/logout/')
 })
+app.get("/nebaigta/:email", function(req, res){
+	var rez
+	db.collection('users').find({"emailas": req.params.email}).toArray((err, result) => {
+    if (err){ return console.log(err)}
+		rez=result[0].daroma
+		testi()
+	})
+	function testi(){
+	db.collection('pamoka').find({_id: ObjectId(rez)}).toArray((err, result) => {
+    if (err){ return console.log(err)}
+		sendSuccessResponse(res, result)
+	})
+	}
+})
+app.get("/testi/:email", function(req, res){
+	db.collection('users').find({"emailas": req.params.email}).toArray((err, result) => {
+    if (err){ return console.log(err)}
+	sendSuccessResponse(res, result[0].kl)
+	})
+
+})
+app.get("/neisprendziamos/:email", function(req, res){
+	console.log('esu')
+	var rezas
+	var galutinis = []
+	var id
+	db.collection('users').find({"kieno": req.params.email}).toArray((err, result) => {
+    if (err) return console.log(err)
+	rezas=result
+	if (rezas.length!=0){
+	taip()
+	}
+	else{
+		sendSuccessResponse(res, 'taip')
+	}
+	})
+	function taip()
+	{
+		if(rezas.length > 0)
+		{		var laikinas=rezas[0].daroma
+			db.collection('pamoka').find({_id: ObjectId(laikinas)}).toArray((err, result) => {
+			if (err) return console.log(err)
+			sendSuccessResponse(res, result)
+			})
+		}
+		else
+		{
+			sendSuccessResponse(res, 'taip')
+		}
+	}
+})
+app.get("/geriausia/:email", function(req, res){
+	var rezas
+	db.collection('pamoka').find({"emailas": req.params.email}).sort({"kartu": -1}).toArray((err, result) => {
+    if (err) return console.log(err)
+	rezas=result
+	siusti()
+	})
+	function siusti()
+	{
+		if (rezas.length == 0)
+		{
+			sendSuccessResponse(res, 'nera')
+		}
+		else
+		{
+			var tarp = rezas[0]
+			sendSuccessResponse(res, tarp)
+		}
+	}
+})
+
 app.listen(8003, function () {
   console.log('Linstening on 8003 port!')
 })

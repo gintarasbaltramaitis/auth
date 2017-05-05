@@ -43,27 +43,37 @@ app.get("/", function(req, resp){
 app.get("/", function(req, resp){
 	resp.redirect('/register')
 });
+function sendSuccessResponse(response, payload) {
+    response.send({
+        'success': true,
+        'payload': payload
+    });
+}
 
-
-app.post('/register', (req, res) => {
+app.post('/register/:vardas/:email/:pw/:pw2/:optradio', (req, res) => {
+	console.log('as cia')
+	console.log(req.params.vardas)
+	console.log(req.params.email)
 	t1=true
 	va=""
 	ema=""
 	passw=""
-	name = req.body.vardas
-	email = req.body.email
-	pw1 = req.body.pw
-	pw2 = req.body.pw2
-	role = req.body.optradio
-	//
-	console.log(name + " " + email + " " + pw1 + " " + pw2 + " " +role );
+	tl=""
+	name = req.params.vardas
+	email = req.params.email
+	pw1 = req.params.pw
+	pw2 = req.params.pw2
+	role = req.params.optradio
+	
 	db.collection('users').find({'vardas': name}).toArray((err, result) => {
     if (err) return console.log(err)
 		if(result.length > 0) {
+			t1=false
 			va= 'Toks vardas jau uzimtas'
 			emailas()
 		}
 		else{
+			console.log('2')
 			emailas()
 		}
 		
@@ -107,32 +117,23 @@ app.post('/register', (req, res) => {
 		pass:pw1,
 		rol:role,
 		registered: new Date().toLocaleString(),
-		pakeistas: new Date().toLocaleString(),
-		daroma: ""
+		pakeistas: new Date().toLocaleString()
 		
 		
 		})
   db.collection('users').save(duomenys, (err, result) => {
     if (err) return console.log(err)
-    res.redirect("http://localhost:3000/login/");
+    sendSuccessResponse(res, 'uzregistruotas')
   })
 })
 	}
 	else{
-		res.render('registration', {
-			em:  ema,
-			pass: passw,
-			vardas: name,
-			emailas: email,
-			vardass: va,
-			tuscia: tl
-		});
+		var temp = [ema, passw, tl, va]
+		sendSuccessResponse(res, temp)
 	}
 }
  })
- app.get("/register", function(req, resp){
-    resp.render('registration');
-});
+
 
 app.listen(8002, function () {
   console.log('Linstening on 8002 port!')

@@ -41,22 +41,24 @@
 			
 			<div class="col-sm-10"> 
 			<h2>Pakeisti slaptažodį</h2>
+			<form action='/slaptazodis' method='post'>
 			<div class="form-group">
 				<div class="input-group">
-					<input type="password" id="senas" placeholder="Senas slaptažodis">
+					<input type="password" name="senas" placeholder="Senas slaptažodis">
 				</div>
-				<span style="color:red"> <% if(typeof klaida != "undefined") {%>  <%= klaida %> <% } %></span>
+				<span style="color:red"></span>
 				<br>	
 				<div class="input-group">
-					<input type="password" id="naujas1" placeholder="Naujas slaptažodis">
+					<input type="password" name="naujas1" placeholder="Naujas slaptažodis">
 				</div>
 				<br>
 				<div class="input-group">
-					<input type="password" id="naujas2" placeholder="Pakrtokite slaptažodį">
+					<input type="password" name="naujas2" placeholder="Pakrtokite slaptažodį">
 				</div>
-				<span style="color:red"> <% if(typeof klaida2 != "undefined") {%>  <%= klaida2 %> <% } %></span>
+				<span style="color:red"></span>
 			</div>	
-			<button class="btn btn-primary" onclick=pakeisti()>Keisti</button>
+			<button class="btn btn-primary">Keisti</button>
+			</form>
 			</div>
 			<span style="color:green"> <% if(typeof pake != "undefined") {%>  <%= pake %> <% } %></span>
 			

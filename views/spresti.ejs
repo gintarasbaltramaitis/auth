@@ -45,7 +45,7 @@
    
 	<div align="center" class="container">
 	
-	<form class="form-inline" action="/spresti/<%=kl%>/<%=klausimas[0].pamokos_id %>" method="POST" >						
+	<form class="form-inline" action="/spresti/<%=kl%>/<%=klausimas[0].pamokos_id %>" method="post" >						
 				<div class="col-sm-9">			
 					
 				<div class="input-group">
@@ -70,7 +70,7 @@
 			<tr>
 				<th><p align="right"><font color="blue" size="2">Nauja skaidrė:</font>
 				
-					<a type="text" name="skaidre" <% if(typeof klausimas != "undefined") {%> href="<%=klausimas[0].skaidre%>" <% } %> id="skaidre" class="form-control" placeholder="URL"> skaidre </a>
+					<a type="text" name="skaidre" <% if(typeof klausimas != "undefined") {%>  id="skaidre" class="form-control" placeholder="URL"> <%=klausimas[0].skaidre%> <% } %> </a>
 				
 				</th>
 			</tr>

@@ -80,7 +80,6 @@ app.get('/slaptazodis/:email', function(req, res){
 		
 });
 app.put('/slapt/:email/:old', (req, res) => {
-
 	db.collection('users')
 	.findOneAndUpdate({"emailas": req.params.email}, {
     $set: {

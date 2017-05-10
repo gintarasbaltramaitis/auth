@@ -238,6 +238,7 @@ app.post("/login", function(req, resp){
 		users[i] = bodyJson3.payload[i].emailas
 		pass[i] = bodyJson3.payload[i].pass
 	}
+	console.log(encryptedHex)
     var data = {
         email:      req.body["email"],
         password:    encryptedHex,
@@ -381,6 +382,14 @@ reques.get(options, function(error, resp, body){
 });
 app.post('/slaptazodis', function (req, res) {
 	var rez
+	var p1 = aesjs.utils.utf8.toBytes(req.body.naujas1);
+	var p2 = aesjs.utils.utf8.toBytes(req.body.senas);
+	var aesCtr = new aesjs.ModeOfOperation.ctr(key_256, new aesjs.Counter(5));
+	var aesCtr2 = new aesjs.ModeOfOperation.ctr(key_256, new aesjs.Counter(5));
+	var encryptedBytes = aesCtr.encrypt(p1);
+	var encryptedBytes2 = aesCtr2.encrypt(p2);
+	var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+	var encryptedHex2 = aesjs.utils.hex.fromBytes(encryptedBytes2);
 if (req.session["sessionUser"]){
 	
 	  db.collection('users').find({"emailas": req.session["email"]}).toArray((err, result) => {
@@ -391,16 +400,22 @@ if (req.session["sessionUser"]){
 		function tikrinti(){
 		if(req.body.naujas1 != req.body.naujas2) {
 			
-			res.render('slaptazodis.ejs', {role: role, vard: vard, pake: 'nesutampa pass'})
+			res.render('slaptazodis.ejs', {role: role, vard: vard, pake: 'Nesutampa slaptažodžiai'})
 		}
-		else if (req.body.senas != rez[0].pass)
+		else if(req.body.naujas1 == '' || req.body.naujas2 == '' || req.body.naujas1 == '') {
+			
+			res.render('slaptazodis.ejs', {role: role, vard: vard, pake: 'Palikti tušti laukai'})
+		}
+		else if (encryptedHex2 != rez[0].pass)
 			
 			{
-				res.render('slaptazodis.ejs', {role: role, vard: vard, pake: 'blogas senas pass'})
+				console.log(encryptedHex2)
+				console.log(rez[0].pass)
+				res.render('slaptazodis.ejs', {role: role, vard: vard, pake: 'Blogas senas slaptažodis'})
 			}
 		else{
 			var options = {
-    url: 'http://localhost:8003/slapt/'+req.session["email"] + '/' + req.body.naujas1,
+    url: 'http://localhost:8003/slapt/'+req.session["email"] + '/' + encryptedHex,
 
 }
 reques.put(options, function(error, resp, body){
@@ -409,7 +424,7 @@ reques.put(options, function(error, resp, body){
 		if (!error && resp.statusCode == 200) 
 		{
                         var bodyJson = JSON.parse(body);
-                        res.render('slaptazodis.ejs', {role: role, vard: vard, pake: 'pakeista'})
+                        res.render('slaptazodis.ejs', {role: role, vard: vard, pake: 'Pakeista'})
         }
 					
 	}

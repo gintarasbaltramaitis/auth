@@ -8,38 +8,20 @@ var session = require('express-session')
 var bodyparser = require('body-parser')
 var app = express()
 var db
-var user
- MongoClient.connect('mongodb://viko:viko@ds133340.mlab.com:33340/viko',function(err,database){
-    if(err)
-    {
-        console.log(err);
-    }
-    else
-    {
-		db=database
-       db.collection('users').find().toArray((err, result) => {
-    if (err) return console.log(err)
-    user=result
-	testi()
-	 
-  })
-	}
 
-})
 
-function testi(){
 var i = 0
 var service = {
 	AuthService : {
 		authPort : {
 			save: function(args){
 				var isTrue = false;
-				for(i=0; i<user.length; i++){
-					
-			if(args["email"] == user[i].emailas && args["password"] == user[i].pass)
-				{					
-					isTrue = true;						
-				}
+				for(i=0; i<args.user.user.length; i++)
+				{
+					if(args["email"] == args.user.user[i] && args["password"] == args.passUser.passUser[i])
+					{					
+						isTrue = true;						
+					}
 				}	
 				return{
 				Login: isTrue	}
@@ -54,6 +36,6 @@ var server = http.createServer(function(request,response) {
 
 server.listen(8001);
 soap.listen(server, '/imam', service, xml);
-}
+
 
 

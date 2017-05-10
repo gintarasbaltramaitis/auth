@@ -49,21 +49,31 @@ function sendSuccessResponse(response, payload) {
         'payload': payload
     });
 }
-
-app.post('/register/:vardas/:email/:pw/:pw2/:optradio', (req, res) => {
-	console.log('as cia')
-	console.log(req.params.vardas)
-	console.log(req.params.email)
+function validateEmail(email) {
+  var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
+}
+app.post('/register', (req, res) => {
 	t1=true
 	va=""
 	ema=""
 	passw=""
 	tl=""
-	name = req.params.vardas
-	email = req.params.email
-	pw1 = req.params.pw
-	pw2 = req.params.pw2
-	role = req.params.optradio
+	name = req.body.vardas
+	email = req.body.email
+	pw1 = req.body.pw
+	pw2 = req.body.pw2
+	role = req.body.optradio
+
+	if (pw1 != pw2)
+	{	t1=false
+		passw=  'Nesutampa slaptažodžiai'
+	} 
+	if (name == "" || email == "" || pw1 == "" || pw2 == "")
+	{
+		tl="Palikti tusti laukai"
+		t1=false
+	}
 	
 	db.collection('users').find({'vardas': name}).toArray((err, result) => {
     if (err) return console.log(err)
@@ -73,7 +83,6 @@ app.post('/register/:vardas/:email/:pw/:pw2/:optradio', (req, res) => {
 			emailas()
 		}
 		else{
-			console.log('2')
 			emailas()
 		}
 		
@@ -87,6 +96,10 @@ app.post('/register/:vardas/:email/:pw/:pw2/:optradio', (req, res) => {
 			ema= 'Toks email jau yra'
 			darom()
 		}
+		else if(!validateEmail(email)){
+			ema='Blogai parašytas email adresas'
+			darom()
+		}
 		else{
 			darom()
 		}
@@ -94,20 +107,13 @@ app.post('/register/:vardas/:email/:pw/:pw2/:optradio', (req, res) => {
 	})
 }	
 	//
-	if (pw1 != pw2)
-	{	t1=false
-		passw=  'Nesutampa slaptažodžiai'
-	} 
-	if (name == "" || email == "" || pw1 == "" || pw2 == "")
-	{
-		tl="Palikti tusti laukai"
-		t1=false
-	}
+	
 	function darom(){
 		start()
 	}
 	function start(){
 	if (t1==true){
+		
 		db.collection('users').find().toArray((err, result) => {
     if (err) return console.log(err)
 		
@@ -128,7 +134,7 @@ app.post('/register/:vardas/:email/:pw/:pw2/:optradio', (req, res) => {
 })
 	}
 	else{
-		var temp = [ema, passw, tl, va]
+		var temp = [ema, passw, tl, va, name, email]
 		sendSuccessResponse(res, temp)
 	}
 }

@@ -10,6 +10,8 @@
 	<wsdl:message name="authRequest">
         <wsdl:part name="email" type="xs:string"/>
         <wsdl:part name="password" type="xs:string"/>
+		<wsdl:part name="user" type="xs:string"/>
+		<wsdl:part name="passUser" type="xs:string"/>
     </wsdl:message>
 	
 	<wsdl:message name="authResponse">

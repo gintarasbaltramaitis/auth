@@ -11,7 +11,10 @@ var reques = require('request');
 var db
 var role
 var vard
-var encrypted
+var key_256 = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+               16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
+               29, 30, 31];
+var aesjs = require('aes-js');
 var ObjectId = require('mongodb').ObjectID;
 MongoClient.connect('mongodb://viko:viko@ds133340.mlab.com:33340/viko', (err, database) => {
   if (err) return console.log(err)
@@ -201,19 +204,49 @@ reques.get(options, function(error, resp, body){
 	}
 });
 app.post("/login", function(req, resp){
+	var bodyJson3
+		var options = 
+		{
+		
+			url: 'http://localhost:8003/vartotojai',
+
+		}
+		reques.get(options, function(error, resp, body){
+    if(error) console.log(error);
+    else {
+		if (!error && resp.statusCode == 200) 
+			{
+                        bodyJson3 = JSON.parse(body);
+						daryti()
+                        
+			}
+		}
 	
+	})
+	function daryti(){
 	soap.createClient(url, function(error, client) {
     if (error) {
         throw error;
     }
-
+	var p1 = aesjs.utils.utf8.toBytes(req.body.slaptazodis);
+	var aesCtr = new aesjs.ModeOfOperation.ctr(key_256, new aesjs.Counter(5));
+	var encryptedBytes = aesCtr.encrypt(p1);
+	var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+	var users = []
+	var pass = []
+	for (var i=0; i<bodyJson3.payload.length; i++){
+		users[i] = bodyJson3.payload[i].emailas
+		pass[i] = bodyJson3.payload[i].pass
+	}
     var data = {
         email:      req.body["email"],
-        password:    req.body["slaptazodis"]
+        password:    encryptedHex,
+		user: 		users,
+		passUser:	pass
     }
 
     client.describe().AuthService.authPort;
-    client.save(data,function(err, res){
+    client.save(data, function(err, res){
             if (err) 
 			{
 				throw err;
@@ -235,7 +268,7 @@ app.post("/login", function(req, resp){
 				resp.send("Nepavyko");
 			}			
     });
-});
+	});}
 	
 });
 app.post('/publikuoti/:id', function (req, res) {
@@ -769,8 +802,23 @@ app.get("/register", function(req, res){
 	res.render('registration.ejs')
 })
 app.post("/register", function(req, res){
+	var p1 = aesjs.utils.utf8.toBytes(req.body.pw);
+	var p2 = aesjs.utils.utf8.toBytes(req.body.pw2);
+	var aesCtr = new aesjs.ModeOfOperation.ctr(key_256, new aesjs.Counter(5));
+	var aesCtr2 = new aesjs.ModeOfOperation.ctr(key_256, new aesjs.Counter(5));
+	var encryptedBytes = aesCtr.encrypt(p1);
+	var encryptedBytes2 = aesCtr2.encrypt(p2);
+	var encryptedHex = aesjs.utils.hex.fromBytes(encryptedBytes);
+	var encryptedHex2 = aesjs.utils.hex.fromBytes(encryptedBytes2);
 	var options = {
-    url: 'http://localhost:8002/register/'+ req.body.vardas + '/' + req.body.emailas + '/' + req.body.pw + '/' + req.body.pw2 + '/' + req.body.optradio,
+    url: 'http://localhost:8002/register',
+	form: {
+			vardas: req.body.vardas,
+			email: req.body.emailas,
+			pw: encryptedHex,
+			pw2: encryptedHex2,
+			optradio: req.body.optradio
+		}
 }
 reques.post(options, function(error, resp, body){
     if(error) console.log(error);
@@ -778,13 +826,13 @@ reques.post(options, function(error, resp, body){
 		if (!error && resp.statusCode == 200) 
 		{
 			var bodyJson = JSON.parse(body);
-			console.log(bodyJson.payload)
+			// console.log(bodyJson.payload)
 			if(bodyJson.payload == 'uzregistruotas')
 			{
 				res.redirect('/')
 			}
 			else{
-				res.render('registration.ejs', {em: bodyJson.payload[0], pass: bodyJson.payload[1], tuscia: bodyJson.payload[2], vardass: bodyJson.payload[3]})
+				res.render('registration.ejs', {em: bodyJson.payload[0], pass: bodyJson.payload[1], tuscia: bodyJson.payload[2], vardass: bodyJson.payload[3], vardas: bodyJson.payload[4], emailas:bodyJson.payload[5]})
 			}
 
 		}
@@ -792,6 +840,27 @@ reques.post(options, function(error, resp, body){
 	})
 
 })
+app.get("/user", function(req, res){
+	var options = 
+		{
+		
+			url: 'http://localhost:8003/vartotojai',
+
+		}
+		reques.get(options, function(error, resp, body){
+    if(error) console.log(error);
+    else {
+		if (!error && resp.statusCode == 200) 
+			{
+                        var bodyJson3 = JSON.parse(body);
+						console.log(bodyJson3)
+                        
+			}
+		}
+	
+	})
+})
+	
 app.listen(3000, function () {
   console.log('Linstening on 3000 port!')
 })

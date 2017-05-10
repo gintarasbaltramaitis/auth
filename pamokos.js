@@ -54,7 +54,6 @@ app.use(express.static('puslapis'))
 app.get("/", function(req, res){
 res.redirect("/paskyra")
 })
-
 function sendErrorResponse(response, payload) {
     response.send({
         'success': false,
@@ -684,7 +683,13 @@ app.get("/geriausia/:email", function(req, res){
 		}
 	}
 })
+app.get("/vartotojai", function(req, res){
+db.collection('users').find().toArray((err, result) => {
+			if (err) return console.log(err)
+			sendSuccessResponse(res, result)
 
+    });
+})
 app.listen(8003, function () {
   console.log('Linstening on 8003 port!')
 })

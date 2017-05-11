@@ -79,6 +79,7 @@
 				  <p align="left">Sunkumo lygis: <font color="green"><b><%= pamoka[i].lygis %></b></font>  Spręsta kartu: <%= pamoka[i].kartu%>  Sukurta <%= pamoka[i].sukurta%></p>
 				<br>
 				<div align="left">
+				<div class="row">
 				<form action='/redaguoti/<%= pamoka[i]._id %>' method='get'> <button class="btn btn-primary btn-xl">Redaguoti</button> </form>
 				  <a href='/redaguoti/klausimus/<%= pamoka[i]._id %>'class="btn btn-primary btn-xl">Redaguoti klausimus</a> 
 				 <form action='/trinti/<%= pamoka[i]._id %>' method='post'><button class="btn btn-primary btn-xl") >Trinti</button> </form>
@@ -89,6 +90,7 @@
 				 <form action='/nepublikuoti/<%= pamoka[i]._id %>' method='post'> <button class="btn btn-primary btn-xl">Nebeblikuoti</button></form>
 				  <% } %>
 				  
+				  </div>
 				  </div>
 				</div>	
 				</div></div>

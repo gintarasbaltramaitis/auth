@@ -138,6 +138,7 @@ app.get("/manopamokos", function(req, response){
 	var bodyJson2
 	var bodyJson3
 	var bodyJson
+	if (role == 2){
 	if (req.session["sessionUser"]){
 	var options = {
     url: 'http://localhost:8003/manopamokos/'+req.session["email"],
@@ -177,7 +178,6 @@ reques.get(options, function(error, resp, body){
     else {
 		if (!error && resp.statusCode == 200) {
                         bodyJson3 = JSON.parse(body);
-						console.log(bodyJson3.payload)
                         if(bodyJson2.payload == 'taip' && bodyJson3.payload == 'nera')
 						{	var taip = {}
 							var taip1
@@ -201,6 +201,10 @@ reques.get(options, function(error, resp, body){
 	}
 	else{
 		response.redirect("/login");
+	}
+	}
+	else{
+		response.redirect("/pamokos");
 	}
 });
 app.post("/login", function(req, resp){
@@ -238,7 +242,6 @@ app.post("/login", function(req, resp){
 		users[i] = bodyJson3.payload[i].emailas
 		pass[i] = bodyJson3.payload[i].pass
 	}
-	console.log(encryptedHex)
     var data = {
         email:      req.body["email"],
         password:    encryptedHex,
@@ -266,7 +269,7 @@ app.post("/login", function(req, resp){
 			}
 			else
 			{
-				resp.send("Nepavyko");
+				resp.redirect("/");
 			}			
     });
 	});}
@@ -415,7 +418,11 @@ if (req.session["sessionUser"]){
 			}
 		else{
 			var options = {
-    url: 'http://localhost:8003/slapt/'+req.session["email"] + '/' + encryptedHex,
+    url: 'http://localhost:8003/slapt/'+req.session["email"],
+	form: 
+		{
+			pass: encryptedHex
+		}
 
 }
 reques.put(options, function(error, resp, body){
@@ -475,7 +482,11 @@ if (req.session["sessionUser"]){
 		}
 		else{
 			var options = {
-    url: 'http://localhost:8003/vard/'+req.session["email"] + '/' + req.body.senas,
+    url: 'http://localhost:8003/vard/'+req.session["email"],
+	form: 
+		{
+			vardas: req.body.senas
+		}
 
 }
 reques.put(options, function(error, resp, body){
@@ -501,14 +512,22 @@ reques.put(options, function(error, resp, body){
 	}
 })
 app.get("/pamoka", function(req, res){
+	if (role == 2){
 	if (req.session["sessionUser"]){
 		res.render('prideti_pam.ejs')
 	}
 	else{
 		res.redirect("/login");
 	}
+	}
+	else{
+		res.redirect("/paskyra");
+	}
+
 })
 app.post("/pamoka/prideti", function(req, res){
+	console.log(req.body.lygis)
+	console.log(req.body.kalba)
 	if (req.session["sessionUser"])
 	{
 		if(req.body.tema == "" || req.body.aprasymas == "")
@@ -518,7 +537,15 @@ app.post("/pamoka/prideti", function(req, res){
 		}
 		else{
 			var options = {
-    url: 'http://localhost:8003/pamoka/prideti/'+req.session["email"] + '/' + req.body.tema + '/' + req.body.aprasymas + '/' + req.body.kalba + '/' + req.body.lygis + '/' + vard,
+    url: 'http://localhost:8003/pamoka/prideti/'+req.session["email"],
+	form: 
+		{
+			tema: req.body.tema,
+			aprasymas: req.body.aprasymas,
+			kalba: req.body.kalba,
+			lygis: req.body.lygis,
+			vard: vard
+		}
 
 }
 reques.post(options, function(error, resp, body){
@@ -532,11 +559,11 @@ reques.post(options, function(error, resp, body){
 	})
 		}
 	}
-	else{
-		res.redirect("/login");
-	}
+	
+else{res.redirect("/paskyra");}
 })
 app.get('/redaguoti/:id', function (req, res) {
+	if (role == 2){
 	if (req.session["sessionUser"]){
 	var options = {
     url: 'http://localhost:8003/pam/'+req.params.id,
@@ -554,9 +581,10 @@ reques.get(options, function(error, resp, body){
 	else{
 		res.redirect("/login");
 	}
+	}
+	else{res.redirect("/paskyra");}
 });
 app.post("/atnaujinti/:id", function(req, res){
-	console.log(req.params.lygis)
 	if(req.body.tema == "" || req.body.aprasymas == "")
 		{
 		var zin="Kažkur palikti tušti laukai"
@@ -565,7 +593,15 @@ app.post("/atnaujinti/:id", function(req, res){
 		else{
 			
 			var options = {
-    url: 'http://localhost:8003/pamoka/atnaujinti/'+req.params.id + '/' + req.body.tema + '/' + req.body.aprasymas + '/' + req.body.kalba + '/' + req.params.lygis,
+    url: 'http://localhost:8003/pamoka/atnaujinti/'+req.params.id,
+	form:
+		{
+			tema:req.body.tema,
+			aprasymas:req.body.aprasymas,
+			kalba:req.body.kalba,
+			lygis:req.body.lygis
+			
+		}
 }
 	console.log(req.body.tema)
 reques.put(options, function(error, resp, body){
@@ -668,7 +704,13 @@ reques.put(options, function(error, resp, body){
 app.post("/filtruoti", function(req, res){
 	var bodyJson
 	var options = {
-    url: 'http://localhost:8003/filtras/'+req.body.kalba + '/' + req.body.lygis + '/' + req.body.destytojas,
+    url: 'http://localhost:8003/filtras/',
+	form:
+		{
+			kalba: req.body.kalba,
+			lygis: req.body.lygis,
+			destytojas: req.body.destytojas
+		}
 
 }
 var options2 = 
@@ -730,7 +772,22 @@ reques.get(options, function(error, resp, body){
 
 })
 app.get("/speti/klausima/:kid/:id", function(req, res){
-var bodyJson
+	if (req.session["sessionUser"]){
+	var bodyJson11
+	var options11 = {
+	url: 'http://localhost:8003/daromaPam/'+ req.session["email"],
+}
+reques.get(options11, function(error, resp, body){
+    if(error) console.log(error);
+    else {
+		if (!error && resp.statusCode == 200) 
+		{
+        bodyJson11 = JSON.parse(body);
+		console.log(bodyJson11)
+		if (bodyJson11.payload[0].daroma == req.params.id && bodyJson11.payload[0].kl == req.params.kid)
+			
+			{
+				var bodyJson
 	var options = {
     url: 'http://localhost:8003/spresti/'+ req.params.kid + '/' + req.params.id,
 }
@@ -761,9 +818,20 @@ reques.get(options, function(error, resp, body){
 	}
 	})
 	}
+			}
+			else{res.redirect('/pamokos')}
+		}
+	}
+	})
+
+	}
+	else{
+		res.redirect("/")
+	}
 
 })
 app.post("/spresti/:kid/:id", function(req, res){
+	if(req.body.atsakymas != '') {
 	var bodyJson
 	var options = {
     url: 'http://localhost:8003/tikrinti/'+ req.params.kid + '/' + req.params.id + '/' + req.body.atsakymas + '/' + req.session["email"],
@@ -791,7 +859,10 @@ reques.put(options, function(error, resp, body){
 		}
 	}
 	})
-
+	}
+	else{
+		res.redirect('/speti/klausima/' + req.params.kid + '/' + req.params.id)
+	}
 
 })
 app.get("/testi/:id", function(req, res){

@@ -37,7 +37,7 @@
 </div>
 <% } %>
 <br>
-<form class="form-inline" action='/klausimas/naujas/<%=kiekis[0].pamokos_id%>' method="get">
+<form class="form-inline" action='/klausimas/naujass/<%=kiekis[0].pamokos_id%>' method="get">
 
 <div class="btn-group button-group-left btn-primary btn-xs" >
 <button class=" w3-button w3-circle w3-white">+</button>
@@ -87,6 +87,7 @@
 			
 			</div>
 </form>
+<% if(typeof zinute != "undefined") {%> <span> <=% zinute => </span> <% }%>
   
   </div>
 <script>

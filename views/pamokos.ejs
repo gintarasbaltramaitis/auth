@@ -81,7 +81,7 @@
 				<div align="left">
 				<div class="row">
 				<form action='/redaguoti/<%= pamoka[i]._id %>' method='get'> <button class="btn btn-primary btn-xl">Redaguoti</button> </form>
-				  <a href='/redaguoti/klausimus/<%= pamoka[i]._id %>'class="btn btn-primary btn-xl">Redaguoti klausimus</a> 
+				  <a href='/klausimas/naujas/1/<%= pamoka[i]._id %>'class="btn btn-primary btn-xl">Redaguoti klausimus</a> 
 				 <form action='/trinti/<%= pamoka[i]._id %>' method='post'><button class="btn btn-primary btn-xl") >Trinti</button> </form>
 				  <% if(pamoka[i].publikuota == "false"){%>
 				  

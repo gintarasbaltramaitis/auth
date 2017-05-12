@@ -36,6 +36,7 @@ app.use("/slaptazodis",express.static('puslapis'));
 app.use("/atnaujint/:id",express.static('puslapis'));
 app.use("/speti/klausima/:kid/:id",express.static('puslapis'));
 app.use("/prideti/klausima",express.static('puslapis'));
+app.use("/klausimas/naujass/:id",express.static('puslapis'));
 app.use("/klausimas/naujas/:id",express.static('puslapis'));
 app.use("/redaguoti/:id",express.static('puslapis'));
 app.use("/login",express.static("puslapis",{index : "login.html"}));
@@ -495,7 +496,7 @@ reques.put(options, function(error, resp, body){
 		if (!error && resp.statusCode == 200) 
 		{
                         var bodyJson = JSON.parse(body);
-                        res.redirect('/')
+                        res.redirect('/keisti/' + req.body.senas)
         }
 					
 	}
@@ -526,6 +527,7 @@ app.get("/pamoka", function(req, res){
 
 })
 app.post("/pamoka/prideti", function(req, res){
+	var id
 	console.log(req.body.lygis)
 	console.log(req.body.kalba)
 	if (req.session["sessionUser"])
@@ -552,8 +554,9 @@ reques.post(options, function(error, resp, body){
     if(error) console.log(error);
     else {
 		if (!error && resp.statusCode == 200) 
-		{	
-		res.redirect("/");
+		{	var bodyJson = JSON.parse(body);
+			id=bodyJson.payload[0]._id
+			res.redirect("/redaguoti/klausimus/" + id);
         }
 	}
 	})
@@ -618,6 +621,7 @@ reques.put(options, function(error, resp, body){
 
 })
 app.get("/redaguoti/klausimus/:id", function(req, res){
+	
 	if (req.session["sessionUser"]){
 		var options = {
     url: 'http://localhost:8003/klausimai/'+req.params.id,
@@ -634,7 +638,8 @@ reques.post(options, function(error, resp, body){
 							res.redirect('/redaguoti/klausimus/' + req.params.id)
 						}
 						else{
-                        res.render('klausimas.ejs', {kiekis: bodyJson.payload})
+						
+                        res.redirect('/')
 						}
         }
 					
@@ -645,8 +650,10 @@ reques.post(options, function(error, resp, body){
 		res.redirect("/login");
 	}
 })
-app.get("/klausimas/naujas/:id", function(req, res){
-
+app.get("/klausimas/naujass/:id", function(req, res){
+	if (req.session["sessionUser"]){
+	var ilgis
+	var id
 			var options = {
     url: 'http://localhost:8003/naujas/klausimas/'+req.params.id,
 
@@ -656,36 +663,104 @@ reques.post(options, function(error, resp, body){
     else {
 		if (!error && resp.statusCode == 200) {
         var bodyJson = JSON.parse(body);
-        res.render('klausimas.ejs', {kiekis: bodyJson.payload})
+		ilgis = bodyJson.payload.length
+		console.log(ilgis)
+		id = bodyJson.payload[0].pamokos_id
+		console.log(id)
+        res.redirect('/klausimas/naujas/' + ilgis + '/' + id)
                     }
 	}
 	})
+	}
+	else{
+		res.redirect('/')
+	}
 
 })
 app.get("/klausimas/naujas/:kid/:id", function(req, res){
-
-			var options = {
-    url: 'http://localhost:8003/konkretus/klausimas/'+req.params.kid + '/' + req.params.id,
+	
+	if (req.session["sessionUser"]){
+		var options1 = {
+    url: 'http://localhost:8003/kurejas/'+req.params.id,
 
 }
-reques.get(options, function(error, resp, body){
+reques.get(options1, function(error, resp, body){
     if(error) console.log(error);
     else {
 		if (!error && resp.statusCode == 200) {
-        var bodyJson = JSON.parse(body);
-		for(var i = 0; i<bodyJson.payload.length; i++)
-		{
-			if (bodyJson.payload[i].kl_id == req.params.kid)
+                        var bodyJson = JSON.parse(body);
+                        if (bodyJson.payload.length != 0)
+						{
+							if (bodyJson.payload[0].emailas == req.session["email"])
+								
+								{
+									var options2 = {
+							url: 'http://localhost:8003/kiek/'+req.params.id,
+
+									}
+									reques.get(options2, function(error, resp, body){
+							if(error) console.log(error);
+							else {
+							if (!error && resp.statusCode == 200) {
+							var bodyJson = JSON.parse(body)
+							  if (req.params.kid <= bodyJson.payload.length)
+								  
+								  {
+									  var dydis
+var options = {
+					url: 'http://localhost:8003/konkretus/klausimas/'+req.params.kid + '/' + req.params.id,
+
+				}
+				reques.get(options, function(error, resp, body){
+				if(error) console.log(error);
+			else {
+				if (!error && resp.statusCode == 200) {
+				var bodyJson = JSON.parse(body);
+				for(var i = 0; i<bodyJson.payload.length; i++)
+				{
+					if (bodyJson.payload[i].kl_id == req.params.kid)
 			{
+			
 			res.render('klausimas.ejs', {kiekis: bodyJson.payload, klausimas: bodyJson.payload[i]})
 			}
 		}
                     }
 	}
 	})
+									  
+								  }
+								  
+								  else{
+									  res.redirect('/klausimas/naujas/' + 1 + '/' + req.params.id)
+								  }
+								}
+								}
+										})
 
+					
+								}
+								else{
+							res.redirect('/')
+						}
+						}
+						
+						else{
+							res.redirect('/')
+						}
+                    }
+	}
+	})
+		
+	}
+	else{
+		res.redirect('/')
+	}
 })
 app.post("/klausimas/saugoti/:kid/:id", function(req, res){
+	if(req.body.vardas == '' || req.body.uzduotis == '' || req.body.atsakymas == '' || req.body.skaidre == ''){
+		res.redirect('/klausimas/naujas/' + req.params.kid + '/' + req.params.id)
+	}
+	else{
 	console.log(req.body.vardas)
 			var options = {
     url: 'http://localhost:8003/atnaujinti/klausimas/'+req.params.kid + '/' + req.params.id + '/' + req.body.vardas + '/' + req.body.uzduotis + '/' + req.body.atsakymas + '/' + req.body.skaidre,
@@ -695,10 +770,11 @@ reques.put(options, function(error, resp, body){
     if(error) console.log(error);
     else {
 		if (!error && resp.statusCode == 200) {
-		res.redirect('/')
+		res.redirect('/klausimas/naujas/' + req.params.kid + '/' + req.params.id)
                     }
 	}
 	})
+	}
 
 })
 app.post("/filtruoti", function(req, res){
@@ -946,7 +1022,29 @@ app.get("/user", function(req, res){
 	
 	})
 })
+app.get("/keisti/:vardas", function(req, res){
+	var options = 
+		{
+		
+			url: 'http://localhost:8003/keistiPamokosVarda',
+			form:{
+			email: req.session["email"],
+			vardas: req.params.vardas
+			}
+
+		}
+		reques.put(options, function(error, resp, body){
+    if(error) console.log(error);
+    else {
+		if (!error && resp.statusCode == 200) 
+			{
+                        res.redirect('/')
+                        
+			}
+		}
 	
+	})
+})
 app.listen(3000, function () {
   console.log('Linstening on 3000 port!')
 })

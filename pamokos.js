@@ -232,7 +232,10 @@ app.post('/pamoka/prideti/:email', (req, res) => {
 		}
   db.collection('pamoka').save(duomenys , (err, result) => {
     if (err) return console.log(err)
+		db.collection('pamoka').find({vardas: req.body.vard,emailas:req.params.email,tema:req.body.tema,aprasymas:req.body.aprasymas,kalba:req.body.kalba,lygis:req.body.lygis}).toArray((err, result) => {
+		if (err) return console.log(err);
 		sendSuccessResponse(res, result)
+		})
    
   })
 })
@@ -254,10 +257,10 @@ app.post("/klausimai/:id", function(req, res){
 		db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
 		if (err) return console.log(err)
 		var duomenys = {
-		vardas:"",
-		uzduotis:"",
-		atsakymas:"",
-		skaidre:"",
+		vardas:"Klausimas",
+		uzduotis:"Uzduotis",
+		atsakymas:"Atsakymas",
+		skaidre:"Skaidre",
 		pamokos_id: ObjectId(req.params.id),
 		kl_id: ilgis
 		
@@ -283,6 +286,7 @@ app.post("/klausimai/:id", function(req, res){
 });
 app.post("/naujas/klausimas/:id", function(req, res){
 	var rez
+	var i
 	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
     if (err) return console.log(err)
 		console.log(result)
@@ -294,10 +298,14 @@ app.post("/naujas/klausimas/:id", function(req, res){
 	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
     if (err) return console.log(err)
 	var duomenys = {
-		vardas:"",
-		uzduotis:"",
-		atsakymas:"",
-		skaidre:"",
+		vardas:"Klausimas",
+		uzduotis:"Aprasymas",
+		atsakymas:"Atsakymas",
+		skaidre:
+			[{
+				1: 'namas'
+			}
+			],
 		pamokos_id: ObjectId(req.params.id),
 		kl_id: rez.length + 1
 		
@@ -638,6 +646,22 @@ app.get("/daromaPam/:email", function(req, res){
     if (err) return console.log(err)
 		sendSuccessResponse(res, result)
 	})
+})
+app.get("/kurejas/:id", function(req, res){
+	db.collection('pamoka').find({_id: ObjectId(req.params.id)}).toArray((err, result) => {
+    if (err) return console.log(err)
+		sendSuccessResponse(res, result)
+	})
+})
+app.get("/kiek/:id", function(req, res){
+	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
+    if (err) return console.log(err)
+		sendSuccessResponse(res, result)
+	})
+})
+app.put("/keistiPamokosVarda", function(req, res){
+	db.collection('pamoka').updateMany({"emailas": req.body.email}, {$set: {"vardas": req.body.vardas}})
+		sendSuccessResponse(res, 'tak')
 })
 app.listen(8003, function () {
   console.log('Linstening on 8003 port!')

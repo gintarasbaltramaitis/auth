@@ -301,11 +301,7 @@ app.post("/naujas/klausimas/:id", function(req, res){
 		vardas:"Klausimas",
 		uzduotis:"Aprasymas",
 		atsakymas:"Atsakymas",
-		skaidre:
-			[{
-				1: 'namas'
-			}
-			],
+		skaidre: "Skaidre",
 		pamokos_id: ObjectId(req.params.id),
 		kl_id: rez.length + 1
 		
@@ -662,6 +658,28 @@ app.get("/kiek/:id", function(req, res){
 app.put("/keistiPamokosVarda", function(req, res){
 	db.collection('pamoka').updateMany({"emailas": req.body.email}, {$set: {"vardas": req.body.vardas}})
 		sendSuccessResponse(res, 'tak')
+})
+app.put('/naujaSkaidre/:kid/:id', (req, res) => {
+	var skaidrute
+	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid) }).toArray((err, result) => {
+    if (err) return console.log(err)
+	skaidrute=result[0].skaidre
+db.collection('klausimas')
+  .findOneAndUpdate({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid)}, {
+    $set: {
+      skaidre: skaidrute + ',Nauja skaidre'
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+		sendSuccessResponse(res, result)
+  })
+	
+  })
+
+
 })
 app.listen(8003, function () {
   console.log('Linstening on 8003 port!')

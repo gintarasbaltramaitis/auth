@@ -678,6 +678,7 @@ reques.post(options, function(error, resp, body){
 
 })
 app.get("/klausimas/naujas/:kid/:id", function(req, res){
+	var skaidres
 	
 	if (req.session["sessionUser"]){
 		var options1 = {
@@ -720,8 +721,10 @@ var options = {
 				{
 					if (bodyJson.payload[i].kl_id == req.params.kid)
 			{
-			
-			res.render('klausimas.ejs', {kiekis: bodyJson.payload, klausimas: bodyJson.payload[i]})
+			skaidres = bodyJson.payload[i].skaidre
+			var resas = skaidres.split(",")
+			console.log(resas)
+			res.render('klausimas.ejs', {kiekis: bodyJson.payload, klausimas: bodyJson.payload[i], sk: resas})
 			}
 		}
                     }
@@ -757,13 +760,51 @@ var options = {
 	}
 })
 app.post("/klausimas/saugoti/:kid/:id", function(req, res){
-	if(req.body.vardas == '' || req.body.uzduotis == '' || req.body.atsakymas == '' || req.body.skaidre == ''){
+	console.log(req.body.skaidre.length)
+	var testi = true
+	var masyvas = []
+	console.log(req.body.skaidre.length)
+	if(req.body.vardas == '' || req.body.uzduotis == '' || req.body.atsakymas == ''){
 		res.redirect('/klausimas/naujas/' + req.params.kid + '/' + req.params.id)
+
 	}
 	else{
-	console.log(req.body.vardas)
-			var options = {
-    url: 'http://localhost:8003/atnaujinti/klausimas/'+req.params.kid + '/' + req.params.id + '/' + req.body.vardas + '/' + req.body.uzduotis + '/' + req.body.atsakymas + '/' + req.body.skaidre,
+		if (req.body.skaidre.constructor != Array)
+		{
+			if (req.body.skaidre != ''){
+				masyvas=req.body.skaidre
+			daryti()
+			}
+			else{
+				res.redirect('/klausimas/naujas/' + req.params.kid + '/' + req.params.id)
+			}
+			
+		}
+		else
+		{
+		for(var i=0; req.body.skaidre.length>i; i++)
+		{
+			if (req.body.skaidre[i] == '')
+			{
+				
+				testi=false
+				
+			}
+			else{
+				masyvas[i] = req.body.skaidre[i]
+				
+			}
+			
+		}
+		daryti()
+		
+	}
+}
+function daryti(){
+		if (testi == true){
+		console.log(masyvas)
+		var options = {
+    url: 'http://localhost:8003/atnaujinti/klausimas/'+req.params.kid + '/' + req.params.id + '/' + req.body.vardas + '/' + req.body.uzduotis + '/' + req.body.atsakymas + '/' + masyvas,
 
 }
 reques.put(options, function(error, resp, body){
@@ -774,6 +815,8 @@ reques.put(options, function(error, resp, body){
                     }
 	}
 	})
+		}
+		else{res.redirect('/klausimas/naujas/' + req.params.kid + '/' + req.params.id)}
 	}
 
 })
@@ -888,8 +931,10 @@ reques.get(options, function(error, resp, body){
     else {
 		if (!error && resp.statusCode == 200) 
 		{
+		var skaidres = bodyJson.payload[0].skaidre
+		var resas = skaidres.split(",")
         var bodyJson2 = JSON.parse(body);
-		res.render('spresti.ejs', {klausimas: bodyJson.payload, kl: req.params.kid, kiekis: bodyJson2.payload, id: req.params.id})
+		res.render('spresti.ejs', {klausimas: bodyJson.payload, kl: req.params.kid, kiekis: bodyJson2.payload, id: req.params.id, sk: resas})
 		}
 	}
 	})
@@ -1045,6 +1090,30 @@ app.get("/keisti/:vardas", function(req, res){
 	
 	})
 })
+app.get('/naujaSkaidre/:kid/:id', function (req, res) {
+	if (role == 2){
+	if (req.session["sessionUser"]){
+		console.log('cia')
+	var options = {
+    url: 'http://localhost:8003/naujaSkaidre/'+req.params.kid + '/' + req.params.id,
+
+}
+reques.put(options, function(error, resp, body){
+    if(error) console.log(error);
+    else {
+		if (!error && resp.statusCode == 200) {
+			var bodyJson = JSON.parse(body)
+             res.redirect('/klausimas/naujas/' + req.params.kid + '/' + req.params.id)
+	}
+	}
+	});
+	}
+	else{
+		res.redirect("/login");
+	}
+	}
+	else{res.redirect("/paskyra");}
+});
 app.listen(3000, function () {
   console.log('Linstening on 3000 port!')
 })

@@ -32,7 +32,7 @@
 <div class="row">
 <% for(var i=0; i<kiekis.length; i++) {%>
 
-<div class="btn-group button-group-left btn-primary btn-xs" >
+<div class="btn-group button-group-left btn-primary btn-xs" method="get" >
 <a href='/klausimas/naujas/<%= kiekis[i].kl_id %>/<%=kiekis[i].pamokos_id%>' class="w3-button w3-circle w3-white" name="jj"><%= kiekis[i].kl_id %></a>
 </div>
 <% } %>
@@ -75,9 +75,16 @@
 			<table class="table" style="width:100%">
 
 			<tr>
-				<th><p align="right"><font color="blue" size="2">Nauja skaidrė:</font>
+				
 				<div class="input-group">
-					<input type="text" name="skaidre" <% if(typeof klausimas != "undefined") {%> value="<%=klausimas.skaidre%>" <% } %> id="skaidre" class="form-control" placeholder="URL">
+				
+				<% for(var j=0; j<sk.length; j++) {%>
+					<input type="text" name="skaidre" value="<%=sk[j]%>" class="form-control" placeholder="URL">
+					<br>
+					<br>
+					<%}%>
+				<a href='/naujaSkaidre/<%=klausimas.kl_id%>/<%=klausimas.pamokos_id%>'class="btn btn-primary btn-xl">Nauja skaidrė</a>
+					
 				</div>
 				</th>
 			</tr>

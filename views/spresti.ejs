@@ -68,9 +68,13 @@
 			<table class="table" style="width:100%">
 
 			<tr>
-				<th><p align="right"><font color="blue" size="2">Nauja skaidrė:</font>
+				<th>
 				
-					<a type="text" name="skaidre" <% if(typeof klausimas != "undefined") {%>  id="skaidre" class="form-control" placeholder="URL"> <%=klausimas[0].skaidre%> <% } %> </a>
+					<% for(var j=0; j<sk.length; j++) {%>
+					<a type="text" name="skaidre"  class="form-control" placeholder="URL"><%=sk[j]%></a>
+					<br>
+					<br>
+					<%}%>
 				
 				</th>
 			</tr>

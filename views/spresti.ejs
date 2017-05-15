@@ -19,7 +19,9 @@
     <ul class="nav navbar-nav">
       <li><a href="/paskyra">Paskyra</a></li>
       <li><a href="/pamokos">Pamokos</a></li>
+      <% if (rol == 2) { %>
       <li><a href="/manopamokos">Mano pamogos</a></li>
+	  <% } %>
     </ul>
 	<ul class="nav navbar-nav navbar-right">
       <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span> Atsijungti</a></li>

@@ -79,7 +79,9 @@
 				<div class="input-group">
 				
 				<% for(var j=0; j<sk.length; j++) {%>
+					<div class="row">
 					<input type="text" name="skaidre" value="<%=sk[j]%>" class="form-control" placeholder="URL">
+					<a href='/istrintiSkaidre/<%=klausimas.kl_id%>/<%=klausimas.pamokos_id%>/<%=j%>'class="btn btn-primary btn-xl">Ištrinti</a> </div>
 					<br>
 					<br>
 					<%}%>

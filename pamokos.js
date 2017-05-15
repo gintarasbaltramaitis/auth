@@ -170,8 +170,9 @@ app.delete('/pamokos/:id', (req, res) => {
   db.collection('klausimas').deleteMany({"pamokos_id": ObjectId(req.params.id)}, (err, result) => {
 
     if (err) return console.log(err)
-		sendSuccessResponse(res, result)
   })
+  db.collection('users').updateMany({"daroma": req.params.id}, {$unset: {"daroma": 1, "kl": 1, "kieno": 1}})
+		sendSuccessResponse(res, 'taip')
 })
 
 app.get("/pam/:id", function(req, res){
@@ -333,17 +334,14 @@ app.get("/konkretus/klausimas/:kid/:id", function(req, res){
 })
 	
 });
-app.put('/atnaujinti/klausimas/:kid/:id/:vardas/:uzduotis/:atsakymas/:skaidre', (req, res) => {
-  console.log(req.params.id)
-  console.log(req.params.vardas)
-  console.log(req.params.skaidre)
+app.put('/atnaujinti/klausimas/:kid/:id', (req, res) => {
   db.collection('klausimas')
   .findOneAndUpdate({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid)}, {
     $set: {
-      vardas: req.params.vardas,
-	  uzduotis: req.params.uzduotis,
-	  atsakymas: req.params.atsakymas,
-	  skaidre: req.params.skaidre,
+      vardas: req.body.vardas,
+	  uzduotis: req.body.uzduotis,
+	  atsakymas: req.body.atsakymas,
+	  skaidre: req.body.skaidre,
     }
   }, {
     sort: {_id: -1},
@@ -425,10 +423,10 @@ app.get('/filtras', (req, res) => {
 })
 
 
-app.get('/pradeti/:id/:email/:email2', (req, res) => {
+app.get('/pradeti/:id', (req, res) => {
 	var rez
 	var kartai
-	db.collection('users').find({"emailas": req.params.email}).toArray((err, result) => {
+	db.collection('users').find({"emailas": req.body.email}).toArray((err, result) => {
     if (err){ return console.log(err)}
 		console.log(result)
 		rez=result
@@ -448,11 +446,11 @@ app.get('/pradeti/:id/:email/:email2', (req, res) => {
 		});
 		function update(){
 		db.collection('users')
-		.findOneAndUpdate({"emailas": req.params.email}, {
+		.findOneAndUpdate({"emailas": req.body.email}, {
 		$set: {
 		daroma: req.params.id,
 		kl: 1,
-		kieno: req.params.email2
+		kieno: req.body.email2
 		}
 		}, {
 		sort: {_id: -1},
@@ -502,7 +500,7 @@ app.get("/kiekis/:kid/:id", function(request, response){
 
   // response.render('spresti.ejs', {klausimas: masyvas, kl: request.params.kid, kiekis: masyv, id: request.params.id, zinute: zin})
 });
-app.put("/tikrinti/:kid/:id/:atsakymas/:email", function(req, res){
+app.put("/tikrinti/:kid/:id", function(req, res){
 	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid)}).toArray((err, result) => {
     if (err){ return console.log(err)}
 		rez=result[0].atsakymas
@@ -510,7 +508,7 @@ app.put("/tikrinti/:kid/:id/:atsakymas/:email", function(req, res){
 	})
 	function tikrinti()
 	{	var tarp
-		if(rez == req.params.atsakymas)
+		if(rez == req.body.atsakymas)
 		{
 			db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
 		if (err){ return console.log(err)}
@@ -523,16 +521,16 @@ app.put("/tikrinti/:kid/:id/:atsakymas/:email", function(req, res){
 			if(req.params.kid == tarp)
 			{
 				
-				db.collection('users').update({"emailas": req.params.email}, {$unset: {"daroma": 1}})
-				db.collection('users').update({"emailas": req.params.email}, {$unset: {"kl": 1}})
-				db.collection('users').update({"emailas": req.params.email}, {$unset: {"kieno": 1}})
+				db.collection('users').update({"emailas": req.body.email}, {$unset: {"daroma": 1}})
+				db.collection('users').update({"emailas": req.body.email}, {$unset: {"kl": 1}})
+				db.collection('users').update({"emailas": req.body.email}, {$unset: {"kieno": 1}})
 				sendSuccessResponse(res, 'sveikinu')
 			}
 			else
 			{
 				var du =parseInt(req.params.kid) + 1
 				  db.collection('users')
-				.findOneAndUpdate({"emailas": req.params.email}, {
+				.findOneAndUpdate({"emailas": req.body.email}, {
 				$set: {
 				kl: du
 				}
@@ -678,6 +676,37 @@ db.collection('klausimas')
   })
 	
   })
+
+
+})
+app.put('/istrintiSkaidre/:kid/:id/:skai', (req, res) => {
+	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid)}).toArray((err, result) => {
+    if (err) return console.log(err)
+		var skaidres = result[0].skaidre
+		var resas = skaidres.split(",")
+		console.log(resas)
+		if (resas.length <= 1)
+		{
+			sendSuccessResponse(res, '1 skaidre')
+		}
+		else
+		{
+			resas.splice(req.params.skai, 1)
+			
+			db.collection('klausimas')
+  .findOneAndUpdate({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid)}, {
+    $set: {
+      skaidre: resas.toString()
+    }
+  }, {
+    sort: {_id: -1},
+    upsert: true
+  }, (err, result) => {
+    if (err) return res.send(err)
+		sendSuccessResponse(res, result)
+  })
+		}
+	})
 
 
 })

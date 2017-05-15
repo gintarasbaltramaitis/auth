@@ -91,7 +91,6 @@ app.get("/pamokos", function(req, response){
 	vienas()
 	function vienas(){
 	reques.get(options3, function(error, resp, body){
-	console.log('siusti')
     if(error) console.log(error);
     else {
 		if (!error && resp.statusCode == 200) 
@@ -123,7 +122,6 @@ reques.get(options, function(error, resp, body){
 		if (!error && resp.statusCode == 200) 
 			{
                         var bodyJson2 = JSON.parse(body);
-						console.log(bodyJson3.payload.length)
                         response.render('pam.ejs', {pamoka: bodyJson.payload, rol: role, destytojai:bodyJson2.payload, rezas: bodyJson3.payload})
 			}
 		}
@@ -804,7 +802,13 @@ function daryti(){
 		if (testi == true){
 		console.log(masyvas)
 		var options = {
-    url: 'http://localhost:8003/atnaujinti/klausimas/'+req.params.kid + '/' + req.params.id + '/' + req.body.vardas + '/' + req.body.uzduotis + '/' + req.body.atsakymas + '/' + masyvas,
+    url: 'http://localhost:8003/atnaujinti/klausimas/'+req.params.kid + '/' + req.params.id,
+	form:{
+		vardas: req.body.vardas,
+		uzduotis: req.body.uzduotis,
+		atsakymas: req.body.atsakymas,
+		skaidre: masyvas.toString()
+	}
 
 }
 reques.put(options, function(error, resp, body){
@@ -868,7 +872,11 @@ reques.get(options, function(error, resp, body){
 app.get("/pradeti/:id/:email", function(req, res){
 
 	var options = {
-    url: 'http://localhost:8003/pradeti/'+ req.params.id + '/' + req.session["email"] + '/' + req.params.email,
+    url: 'http://localhost:8003/pradeti/'+ req.params.id,
+	form: {
+		email: req.session["email"],
+		email2: req.params.email
+	}
 
 }
 reques.get(options, function(error, resp, body){
@@ -902,7 +910,6 @@ reques.get(options11, function(error, resp, body){
 		if (!error && resp.statusCode == 200) 
 		{
         bodyJson11 = JSON.parse(body);
-		console.log(bodyJson11)
 		if (bodyJson11.payload[0].daroma == req.params.id && bodyJson11.payload[0].kl == req.params.kid)
 			
 			{
@@ -934,7 +941,7 @@ reques.get(options, function(error, resp, body){
 		var skaidres = bodyJson.payload[0].skaidre
 		var resas = skaidres.split(",")
         var bodyJson2 = JSON.parse(body);
-		res.render('spresti.ejs', {klausimas: bodyJson.payload, kl: req.params.kid, kiekis: bodyJson2.payload, id: req.params.id, sk: resas})
+		res.render('spresti.ejs', {klausimas: bodyJson.payload, kl: req.params.kid, kiekis: bodyJson2.payload, id: req.params.id, sk: resas, rol: role})
 		}
 	}
 	})
@@ -955,7 +962,11 @@ app.post("/spresti/:kid/:id", function(req, res){
 	if(req.body.atsakymas != '') {
 	var bodyJson
 	var options = {
-    url: 'http://localhost:8003/tikrinti/'+ req.params.kid + '/' + req.params.id + '/' + req.body.atsakymas + '/' + req.session["email"],
+    url: 'http://localhost:8003/tikrinti/'+ req.params.kid + '/' + req.params.id,
+	form:{
+		atsakymas: req.body.atsakymas,
+		email: req.session["email"]
+	}
 }
 reques.put(options, function(error, resp, body){
     if(error) console.log(error);
@@ -963,11 +974,8 @@ reques.put(options, function(error, resp, body){
 		if (!error && resp.statusCode == 200) 
 		{
         bodyJson = JSON.parse(body);
-			console.log('tak')
-			console.log(bodyJson.payload)
 			if (bodyJson.payload == 'teisingai')
 			{	var sk= parseInt(req.params.kid) + 1
-				console.log(sk)
 				res.redirect('/speti/klausima/' + sk + '/' + req.params.id)
 			}
 			else if (bodyJson.payload == 'sveikinu')
@@ -1033,7 +1041,6 @@ reques.post(options, function(error, resp, body){
 		if (!error && resp.statusCode == 200) 
 		{
 			var bodyJson = JSON.parse(body);
-			// console.log(bodyJson.payload)
 			if(bodyJson.payload == 'uzregistruotas')
 			{
 				res.redirect('/')
@@ -1060,7 +1067,6 @@ app.get("/user", function(req, res){
 		if (!error && resp.statusCode == 200) 
 			{
                         var bodyJson3 = JSON.parse(body);
-						console.log(bodyJson3)
                         
 			}
 		}
@@ -1096,6 +1102,30 @@ app.get('/naujaSkaidre/:kid/:id', function (req, res) {
 		console.log('cia')
 	var options = {
     url: 'http://localhost:8003/naujaSkaidre/'+req.params.kid + '/' + req.params.id,
+
+}
+reques.put(options, function(error, resp, body){
+    if(error) console.log(error);
+    else {
+		if (!error && resp.statusCode == 200) {
+			var bodyJson = JSON.parse(body)
+             res.redirect('/klausimas/naujas/' + req.params.kid + '/' + req.params.id)
+	}
+	}
+	});
+	}
+	else{
+		res.redirect("/login");
+	}
+	}
+	else{res.redirect("/paskyra");}
+});
+app.get('/istrintiSkaidre/:kid/:id/:sk', function (req, res) {	
+	if (role == 2){
+	if (req.session["sessionUser"]){
+		
+	var options = {
+    url: 'http://localhost:8003/istrintiSkaidre/'+req.params.kid + '/' + req.params.id + '/' + req.params.sk,
 
 }
 reques.put(options, function(error, resp, body){

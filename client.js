@@ -575,7 +575,8 @@ reques.get(options, function(error, resp, body){
     else {
 		if (!error && resp.statusCode == 200) {
 			var bodyJson = JSON.parse(body)
-             res.render('atnaujinti.ejs', {tema: bodyJson.payload[0].tema, aprasymas: bodyJson.payload[0].aprasymas , kalba: bodyJson.payload[0].kalba , lygis: bodyJson.payload[0].lygis  , pamoka: bodyJson.payload[0]._id})  
+             res.render('atnaujinti.ejs', {tema: bodyJson.payload[0].tema, aprasymas: bodyJson.payload[0].aprasymas , kalba: bodyJson.payload[0].kalba , lygis: 
+bodyJson.payload[0].lygis  , pamoka: bodyJson.payload[0]._id})  
                     }
 	}
 	});}
@@ -1046,7 +1047,8 @@ reques.post(options, function(error, resp, body){
 				res.redirect('/')
 			}
 			else{
-				res.render('registration.ejs', {em: bodyJson.payload[0], pass: bodyJson.payload[1], tuscia: bodyJson.payload[2], vardass: bodyJson.payload[3], vardas: bodyJson.payload[4], emailas:bodyJson.payload[5]})
+				res.render('registration.ejs', {em: bodyJson.payload[0], pass: bodyJson.payload[1], tuscia: bodyJson.payload[2], vardass: bodyJson.payload[3], vardas: 
+bodyJson.payload[4], emailas:bodyJson.payload[5]})
 			}
 
 		}
@@ -1144,6 +1146,31 @@ reques.put(options, function(error, resp, body){
 	}
 	else{res.redirect("/paskyra");}
 });
+app.get('/istrintiKlausima/:kid/:id', function (req, res) {	
+	if (role == 2){
+	if (req.session["sessionUser"]){
+	console.log(req.params.kid)	
+	var options = {
+    url: 'http://localhost:8003/istrintiKlausima/'+req.params.kid + '/' + req.params.id,
+
+}
+reques.delete(options, function(error, resp, body){
+    if(error) console.log(error);
+    else {
+		if (!error && resp.statusCode == 200) {
+			var bodyJson = JSON.parse(body)
+             res.redirect('/klausimas/naujas/' + req.params.kid + '/' + req.params.id)
+	}
+	}
+	});
+	}
+	else{
+		res.redirect("/login");
+	}
+	}
+	else{res.redirect("/paskyra");}
+});
+
 app.listen(3000, function () {
   console.log('Linstening on 3000 port!')
 })

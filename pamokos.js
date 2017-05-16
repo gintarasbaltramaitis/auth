@@ -233,7 +233,8 @@ app.post('/pamoka/prideti/:email', (req, res) => {
 		}
   db.collection('pamoka').save(duomenys , (err, result) => {
     if (err) return console.log(err)
-		db.collection('pamoka').find({vardas: req.body.vard,emailas:req.params.email,tema:req.body.tema,aprasymas:req.body.aprasymas,kalba:req.body.kalba,lygis:req.body.lygis}).toArray((err, result) => {
+		db.collection('pamoka').find({vardas: 
+req.body.vard,emailas:req.params.email,tema:req.body.tema,aprasymas:req.body.aprasymas,kalba:req.body.kalba,lygis:req.body.lygis}).toArray((err, result) => {
 		if (err) return console.log(err);
 		sendSuccessResponse(res, result)
 		})
@@ -290,7 +291,6 @@ app.post("/naujas/klausimas/:id", function(req, res){
 	var i
 	db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
     if (err) return console.log(err)
-		console.log(result)
 		rez=result
 	toliau()
 })
@@ -352,7 +352,6 @@ app.put('/atnaujinti/klausimas/:kid/:id', (req, res) => {
   })
 })
 app.get('/filtras', (req, res) => {
-	console.log(req.body.lygis)
 
 
 
@@ -428,7 +427,6 @@ app.get('/pradeti/:id', (req, res) => {
 	var kartai
 	db.collection('users').find({"emailas": req.body.email}).toArray((err, result) => {
     if (err){ return console.log(err)}
-		console.log(result)
 		rez=result
 		toliau()
 	})
@@ -439,8 +437,6 @@ app.get('/pradeti/:id', (req, res) => {
 		{
 	    db.collection('pamoka').find({"_id": ObjectId(req.params.id)}).toArray((err, result) =>{
 			kartai=parseInt(result[0].kartu)+1
-			console.log(kartai)
-			console.log('cia')
 			update()
 
 		});
@@ -610,7 +606,7 @@ app.get("/neisprendziamos/:email", function(req, res){
 })
 app.get("/geriausia/:email", function(req, res){
 	var rezas
-	db.collection('pamoka').find({"emailas": req.params.email}).sort({"kartu": -1}).toArray((err, result) => {
+	db.collection('pamoka').find({"emailas": req.params.email}).sort({"kartu": 1}).toArray((err, result) => {
     if (err) return console.log(err)
 	rezas=result
 	siusti()
@@ -710,6 +706,41 @@ app.put('/istrintiSkaidre/:kid/:id/:skai', (req, res) => {
 
 
 })
+app.delete('/istrintiKlausima/:kid/:id', (req, res) => {
+  if(req.params.kid == 1)
+  {
+	 db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
+    if (err){ return console.log(err)}
+		if (result.length == 1)
+		{
+			sendSuccessResponse(res, 'paskutinis klausimas')
+		}
+		else
+		{
+			console.log('cia')
+			trintiPam()
+		}
+	})
+  }
+  else
+  {
+	  trintiPam()
+  }
+  function trintiPam()
+  {
+	  // db.collection('klausimas').findOneAndDelete({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid)}, (err, result) => {
+    // if (err) return console.log(err)
+	// })
+
+
+	// db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id), "kl_id":{$in: [1,parseInt(req.params.kid)-1]}}).toArray((err, result) => {
+    // if (err){ return console.log(err)}
+		// console.log(result)
+// })
+  }
+})
+
+
 app.listen(8003, function () {
   console.log('Linstening on 8003 port!')
 })

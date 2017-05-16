@@ -29,14 +29,22 @@
 
 
 <div  class="container">
-<div class="row">
+<div class="row ">
+<p>
 <% for(var i=0; i<kiekis.length; i++) {%>
-
-<div class="btn-group button-group-left btn-primary btn-xs" method="get" >
-<a href='/klausimas/naujas/<%= kiekis[i].kl_id %>/<%=kiekis[i].pamokos_id%>' class="w3-button w3-circle w3-white" name="jj"><%= kiekis[i].kl_id %></a>
+<div class="btn-group btn-primary btn-md" method="get">
+<a href='/istrintiKlausima/<%= kiekis[i].kl_id %>/<%=kiekis[i].pamokos_id%>' class=" w3-button w3-circle w3-white"><span class="dydis">-</span></a>
 </div>
 <% } %>
-<br>
+</p>
+<p>
+<% for(var i=0; i<kiekis.length; i++) {%>
+<div class="btn-group button-group-left btn-primary btn-md" method="get" >
+<a href='/klausimas/naujas/<%= kiekis[i].kl_id %>/<%=kiekis[i].pamokos_id%>' class="w3-button w3-circle w3-white" name="jj"><%= kiekis[i].kl_id %></a>
+</div>
+
+<% } %>
+</p>
 <form class="form-inline" action='/klausimas/naujass/<%=kiekis[0].pamokos_id%>' method="get">
 
 <div class="btn-group button-group-left btn-primary btn-xs" >
@@ -52,20 +60,24 @@
    
 	<div align="center" class="container">
 	
-	<form class="form-inline" <% if(typeof klausimas != "undefined") {%>  action='/klausimas/saugoti/<%=klausimas.kl_id%>/<%=klausimas.pamokos_id%>' method='post' <% } %> >						
+	<form class="form-inline" <% if(typeof klausimas != "undefined") {%>  action='/klausimas/saugoti/<%=klausimas.kl_id%>/<%=klausimas.pamokos_id%>' method='post' <% } %> 
+>						
 				<div class="col-sm-9">			
 					
 				<div class="input-group">
-					<input type="text" class="form-control" placeholder="Klausimas"<% if(typeof klausimas != "undefined") {%> value="<%=klausimas.vardas%>"<% } %> name="vardas" id="vardas">
+					<input type="text" class="form-control" placeholder="Klausimas"<% if(typeof klausimas != "undefined") {%> value="<%=klausimas.vardas%>"<% } %> name="vardas" 
+id="vardas">
 				</div>
 				<br><br><br>
 				<div class="input-group">
-		<textarea class="form-control" rows="15" cols="200" name="uzduotis" id="uzduotis"  placeholder="Užduotis"><% if(typeof klausimas != "undefined") {%><%=klausimas.uzduotis%> <% } %></textarea>
+		<textarea class="form-control" rows="15" cols="200" name="uzduotis" id="uzduotis"  placeholder="Užduotis"><% if(typeof klausimas != "undefined") {%><%=klausimas.uzduotis%> 
+<% } %></textarea>
     </div>
 	
 	<br><br>
 	<div align="left">
-		<input type="text" align="left" class="form-control" name="atsakymas" id="atsakymas" <% if(typeof klausimas != "undefined") {%> value="<%=klausimas.atsakymas%>" <% } %> placeholder="Teisingas atsakymas">
+		<input type="text" align="left" class="form-control" name="atsakymas" id="atsakymas" <% if(typeof klausimas != "undefined") {%> value="<%=klausimas.atsakymas%>" <% } %> 
+placeholder="Teisingas atsakymas">
 	</div>
 	<br> <br>
 	<button class="btn btn-primary btn-xl">Išsaugoti</button>

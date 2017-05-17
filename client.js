@@ -475,7 +475,11 @@ if (req.session["sessionUser"]){
 		tikrinti()
   })
 		function tikrinti(){
-		if(rez.length != 0) {
+		if (req.body.senas=='')
+		{
+			res.render('vardas.ejs', {role: role, vard: vard, pake: 'Tuscias laukas'})
+		}
+		else if(rez.length != 0) {
 			
 			res.render('vardas.ejs', {role: role, vard: vard, pake: 'Toks vardas jau uzimtas'})
 		}

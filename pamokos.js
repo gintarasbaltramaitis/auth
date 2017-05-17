@@ -568,6 +568,8 @@ app.get("/nebaigta/:email", function(req, res){
 	})
 	}
 })
+
+
 app.get("/testi/:email", function(req, res){
 	db.collection('users').find({"emailas": req.params.email}).toArray((err, result) => {
     if (err){ return console.log(err)}
@@ -582,6 +584,7 @@ app.get("/neisprendziamos/:email", function(req, res){
 	db.collection('users').find({"kieno": req.params.email}).toArray((err, result) => {
     if (err) return console.log(err)
 	rezas=result
+	console.log(rezas)
 	if (rezas.length!=0){
 	taip()
 	}
@@ -591,17 +594,31 @@ app.get("/neisprendziamos/:email", function(req, res){
 	})
 	function taip()
 	{
+	db.collection('pamoka').find({"emailas": req.params.email}).toArray((err, result) => {
+    if (err) return console.log(err)
+	var galutinis = []
+	var rez = result
 		if(rezas.length > 0)
-		{		var laikinas=rezas[0].daroma
-			db.collection('pamoka').find({_id: ObjectId(laikinas)}).toArray((err, result) => {
-			if (err) return console.log(err)
-			sendSuccessResponse(res, result)
-			})
+		{	
+			for(var i=0; rez.length>i; i++)
+			{
+				for(var j=0; rezas.length>j; j++)
+				{
+					if(rez[i]._id==rezas[j].daroma)
+					{
+						galutinis.push(rez[i])
+						j=rezas.length
+					}
+				}
+			}
+			sendSuccessResponse(res, galutinis)
+			
 		}
 		else
 		{
 			sendSuccessResponse(res, 'taip')
 		}
+	})
 	}
 })
 app.get("/geriausia/:email", function(req, res){

@@ -728,16 +728,25 @@ app.delete('/istrintiKlausima/:kid/:id', (req, res) => {
   }
   function trintiPam()
   {
-	  // db.collection('klausimas').findOneAndDelete({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid)}, (err, result) => {
-    // if (err) return console.log(err)
-	// })
+	  var rezas
+	  var i = parseInt(req.params.kid)
+	  db.collection('klausimas').findOneAndDelete({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid)}, (err, result) => {
+    if (err) return console.log(err)
+	
 
+db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
+    if (err){ return console.log(err)}
+		rezas=result.length
+		console.log(rezas)
 
-	// db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id), "kl_id":{$in: [1,parseInt(req.params.kid)-1]}}).toArray((err, result) => {
-    // if (err){ return console.log(err)}
-		// console.log(result)
-// })
-  }
+  for( var j = parseInt(req.params.kid); rezas>=j; j++){
+	  
+	db.collection('klausimas').update({"pamokos_id": ObjectId(req.params.id), "kl_id": { $gt: j} }, { $set: { kl_id: j }} )
+}
+	sendSuccessResponse(res, 'tak')
+})
+})
+}
 })
 
 

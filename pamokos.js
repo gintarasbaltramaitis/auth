@@ -509,7 +509,6 @@ app.put("/tikrinti/:kid/:id", function(req, res){
 			db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
 		if (err){ return console.log(err)}
 		tarp=result.length
-		console.log(result.length)
 		toliau()
 		})
 		function toliau()
@@ -584,7 +583,6 @@ app.get("/neisprendziamos/:email", function(req, res){
 	db.collection('users').find({"kieno": req.params.email}).toArray((err, result) => {
     if (err) return console.log(err)
 	rezas=result
-	console.log(rezas)
 	if (rezas.length!=0){
 	taip()
 	}
@@ -697,7 +695,6 @@ app.put('/istrintiSkaidre/:kid/:id/:skai', (req, res) => {
     if (err) return console.log(err)
 		var skaidres = result[0].skaidre
 		var resas = skaidres.split(",")
-		console.log(resas)
 		if (resas.length <= 1)
 		{
 			sendSuccessResponse(res, '1 skaidre')
@@ -754,7 +751,6 @@ app.delete('/istrintiKlausima/:kid/:id', (req, res) => {
 db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray((err, result) => {
     if (err){ return console.log(err)}
 		rezas=result.length
-		console.log(rezas)
 
   for( var j = parseInt(req.params.kid); rezas>=j; j++){
 	  
@@ -763,7 +759,6 @@ db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray
 	 db.collection('users').find({"daroma": req.params.id,"kl": { $gte: parseInt(req.params.kid) } }).toArray((err, result) => {
     if (err){ return console.log(err)}
 	rezas2=result
-	console.log(rezas2)
 	for(var i = 0; rezas2.length>i; i++)
 	{
 		if (rezas2[i].kl==1)

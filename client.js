@@ -411,7 +411,6 @@ if (req.session["sessionUser"]){
 		else if (encryptedHex2 != rez[0].pass)
 			
 			{
-				console.log(encryptedHex2)
 				console.log(rez[0].pass)
 				res.render('slaptazodis.ejs', {role: role, vard: vard, pake: 'Blogas senas slaptažodis'})
 			}
@@ -530,8 +529,6 @@ app.get("/pamoka", function(req, res){
 })
 app.post("/pamoka/prideti", function(req, res){
 	var id
-	console.log(req.body.lygis)
-	console.log(req.body.kalba)
 	if (req.session["sessionUser"])
 	{
 		if(req.body.tema == "" || req.body.aprasymas == "")
@@ -609,11 +606,9 @@ app.post("/atnaujinti/:id", function(req, res){
 			
 		}
 }
-	console.log(req.body.tema)
 reques.put(options, function(error, resp, body){
     if(error) console.log(error);
     else {
-		console.log('cia')
 		if (!error && resp.statusCode == 200) {
         var bodyJson = JSON.parse(body);
         res.redirect('/')
@@ -667,9 +662,7 @@ reques.post(options, function(error, resp, body){
 		if (!error && resp.statusCode == 200) {
         var bodyJson = JSON.parse(body);
 		ilgis = bodyJson.payload.length
-		console.log(ilgis)
 		id = bodyJson.payload[0].pamokos_id
-		console.log(id)
         res.redirect('/klausimas/naujas/' + ilgis + '/' + id)
                     }
 	}
@@ -707,11 +700,12 @@ reques.get(options1, function(error, resp, body){
 							else {
 							if (!error && resp.statusCode == 200) {
 							var bodyJson = JSON.parse(body)
-							  if (req.params.kid <= bodyJson.payload.length)
+							  if (req.params.kid <= bodyJson.payload.length && req.params.kid>=1)
+								  
 								  
 								  {
 									  var dydis
-var options = {
+						var options = {
 					url: 'http://localhost:8003/konkretus/klausimas/'+req.params.kid + '/' + req.params.id,
 
 				}
@@ -726,14 +720,12 @@ var options = {
 			{
 			skaidres = bodyJson.payload[i].skaidre
 			var resas = skaidres.split(",")
-			console.log(resas)
 			res.render('klausimas.ejs', {kiekis: bodyJson.payload, klausimas: bodyJson.payload[i], sk: resas})
 			}
 		}
                     }
 	}
 	})
-									  
 								  }
 								  
 								  else{
@@ -763,10 +755,8 @@ var options = {
 	}
 })
 app.post("/klausimas/saugoti/:kid/:id", function(req, res){
-	console.log(req.body.skaidre.length)
 	var testi = true
 	var masyvas = []
-	console.log(req.body.skaidre.length)
 	if(req.body.vardas == '' || req.body.uzduotis == '' || req.body.atsakymas == ''){
 		res.redirect('/klausimas/naujas/' + req.params.kid + '/' + req.params.id)
 
@@ -805,7 +795,6 @@ app.post("/klausimas/saugoti/:kid/:id", function(req, res){
 }
 function daryti(){
 		if (testi == true){
-		console.log(masyvas)
 		var options = {
     url: 'http://localhost:8003/atnaujinti/klausimas/'+req.params.kid + '/' + req.params.id,
 	form:{
@@ -864,7 +853,6 @@ reques.get(options, function(error, resp, body){
 			{
                         var bodyJson2 = JSON.parse(body);
 						var tuscias = {}
-						console.log(tuscias)
                         res.render('pam.ejs', {pamoka: bodyJson.payload, rol: role, destytojai:bodyJson2.payload, rezas: tuscias})
 			}
 		}
@@ -1010,7 +998,6 @@ reques.get(options, function(error, resp, body){
 		{
        var bodyJson = JSON.parse(body);
 	   var test = bodyJson.payload
-	   console.log(test)
 			res.redirect('/speti/klausima/' + test + '/' + req.params.id)
 		}
 	}
@@ -1105,7 +1092,6 @@ app.get("/keisti/:vardas", function(req, res){
 app.get('/naujaSkaidre/:kid/:id', function (req, res) {
 	if (role == 2){
 	if (req.session["sessionUser"]){
-		console.log('cia')
 	var options = {
     url: 'http://localhost:8003/naujaSkaidre/'+req.params.kid + '/' + req.params.id,
 
@@ -1153,7 +1139,6 @@ reques.put(options, function(error, resp, body){
 app.get('/istrintiKlausima/:kid/:id', function (req, res) {	
 	if (role == 2){
 	if (req.session["sessionUser"]){
-	console.log(req.params.kid)	
 	var options = {
     url: 'http://localhost:8003/istrintiKlausima/'+req.params.kid + '/' + req.params.id,
 

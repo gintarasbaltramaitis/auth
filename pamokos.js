@@ -717,7 +717,6 @@ app.delete('/istrintiKlausima/:kid/:id', (req, res) => {
 		}
 		else
 		{
-			console.log('cia')
 			trintiPam()
 		}
 	})
@@ -729,6 +728,7 @@ app.delete('/istrintiKlausima/:kid/:id', (req, res) => {
   function trintiPam()
   {
 	  var rezas
+	  var rezas2
 	  var i = parseInt(req.params.kid)
 	  db.collection('klausimas').findOneAndDelete({"pamokos_id": ObjectId(req.params.id), "kl_id": parseInt(req.params.kid)}, (err, result) => {
     if (err) return console.log(err)
@@ -741,8 +741,31 @@ db.collection('klausimas').find({"pamokos_id": ObjectId(req.params.id)}).toArray
 
   for( var j = parseInt(req.params.kid); rezas>=j; j++){
 	  
-	db.collection('klausimas').update({"pamokos_id": ObjectId(req.params.id), "kl_id": { $gt: j} }, { $set: { kl_id: j }} )
+	db.collection('klausimas').update({"pamokos_id": ObjectId(req.params.id), "kl_id": { $gt:j } }, { $set: { kl_id: j }} )
 }
+	 db.collection('users').find({"daroma": req.params.id,"kl": { $gte: parseInt(req.params.kid) } }).toArray((err, result) => {
+    if (err){ return console.log(err)}
+	rezas2=result
+	console.log(rezas2)
+	for(var i = 0; rezas2.length>i; i++)
+	{
+		if (rezas2[i].kl==1)
+		{
+			console.log('pirmas klausimas')
+		}
+		else if(rezas2[i].kl>rezas)
+		{
+			db.collection('users').update({"_id": ObjectId(rezas2[i]._id)}, {$unset: {"daroma": 1, "kl": 1, "kieno": 1}})
+		}
+		else if(rezas2[i].kl==parseInt(req.params.kid))
+		{
+			console.log('tas ir pasilieka')
+		}
+		else{
+			db.collection('users').update({"_id": ObjectId(rezas2[i]._id)}, { $set: { kl:  rezas2[i].kl - 1}} )
+		}
+	}
+	})
 	sendSuccessResponse(res, 'tak')
 })
 })
